@@ -15,17 +15,17 @@ class _LoginPageState extends State<LoginPage> {
   void _login() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (_code == 'STUDENT123') {
+      if (_code == 'mahasiswa') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (ctx) => StudentDashboard()),
         );
-      } else if (_code == 'HEAD456') {
+      } else if (_code == 'kaprodi') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (ctx) => HeadDashboard()),
         );
-      } else if (_code == 'FACULTY789') {
+      } else if (_code == 'fakultas') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (ctx) => FacultyDashboard()),

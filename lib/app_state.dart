@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/email.dart';
 import 'package:flutter_application_1/models/proposal.dart';
+import 'package:flutter_application_1/models/user.dart';  // Import User model
 
 class AppState with ChangeNotifier {
-  final List<Email> _emails = [];
+  final List<User> _users = [];
+  final List<Email> _emails = []; 
   List<Proposal> proposals = [];
+  
+  List<User> getUsers() {
+    return _users;
+  }
 
-  List<Email> get emails => _emails;
+  void addUser(User user) {
+    _users.add(user);
+    notifyListeners();
+  }
 
-  // Email related methods
+  void updateUser(int index, User updatedUser) {
+    _users[index] = updatedUser;
+    notifyListeners();
+  }
+
+  void deleteUser(int index) {
+    _users.removeAt(index);
+    notifyListeners();
+  }
+
   void addEmail(Email email) {
     _emails.add(email);
     notifyListeners();
@@ -23,27 +41,21 @@ class AppState with ChangeNotifier {
     _emails[index].forwardTo = forwardTo;
     notifyListeners();
   }
-
-  // Proposal related methods (Corrected placement)
   
-  // CREATE: Add a new proposal
   void addProposal(Proposal proposal) {
     proposals.add(proposal);
     notifyListeners();
   }
 
-  // READ: Get the list of proposals
   List<Proposal> getProposals() {
     return proposals;
   }
 
-  // UPDATE: Change the status of a proposal
   void updateProposalStatus(int index, String newStatus) {
     proposals[index].status = newStatus;
     notifyListeners();
   }
 
-  // DELETE: Remove a proposal
   void deleteProposal(int index) {
     proposals.removeAt(index);
     notifyListeners();

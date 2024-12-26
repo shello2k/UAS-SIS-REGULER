@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(builder: (ctx) => FacultyDashboard()),
         );
-      } else if (_code == 'adminCode') {
+      } else if (_code == 'kodeAdmin') {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (ctx) => AdminPage()), 

@@ -8,20 +8,33 @@ class StudentDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
-    final titleController = TextEditingController();
     final detailsController = TextEditingController();
+    final titleController = TextEditingController();
+    String? selectedCategory; 
 
     void _submitProposal() {
-      final proposal = Proposal(
-        title: titleController.text,
-        details: detailsController.text,
-        status: 'Submitted', // Default status
-      );
-      appState.addProposal(proposal);
-      titleController.clear();
-      detailsController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Proposal Submitted')));
-    }
+  if (selectedCategory == null || titleController.text.isEmpty || detailsController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please complete all fields before submitting.')),
+    );
+    return;
+  }
+
+    final proposal = Proposal(
+      category: selectedCategory!, 
+      title: titleController.text,
+      details: detailsController.text,
+      status: 'Submitted', 
+    );
+    appState.addProposal(proposal);
+    selectedCategory = null;
+    titleController.clear();
+    detailsController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Proposal Submitted')),
+    );
+  }
+
 
     return Scaffold(
       appBar: AppBar(title: Text('Student Dashboard')),
@@ -29,9 +42,27 @@ class StudentDashboard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              items: [
+                'Peminjaman Ruangan',
+                'Peminjaman Asset',
+                'Bimbingan'
+              ].map((subject) {
+                return DropdownMenuItem(
+                  value: subject,
+                  child: Text(subject),
+                );
+              }).toList(),
+              decoration: InputDecoration(labelText: 'Proposal Category'),
+              onChanged: (value) {
+                selectedCategory = value;
+              },
+            ),
             TextField(
               controller: titleController,
               decoration: InputDecoration(labelText: 'Proposal Title'),
+              maxLines: 4,
             ),
             TextField(
               controller: detailsController,
@@ -51,7 +82,7 @@ class StudentDashboard extends StatelessWidget {
                   final proposal = appState.getProposals()[index];
                   return Card(
                     child: ListTile(
-                      title: Text(proposal.title),
+                      title: Text('${proposal.category} - ${proposal.title}'),
                       subtitle: Text(proposal.details),
                       trailing: Text(proposal.status),
                     ),

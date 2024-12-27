@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/student_dashboard.dart';
 import 'package:flutter_application_1/pages/head_dashboard.dart';
 import 'package:flutter_application_1/pages/faculty_dashboard.dart';
-import 'package:flutter_application_1/pages/admin_dashboard.dart'; 
+import 'package:flutter_application_1/pages/admin_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       } else if (_code == 'kodeAdmin') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (ctx) => AdminPage()), 
+          MaterialPageRoute(builder: (ctx) => AdminPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -52,14 +52,14 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/background_image.png', 
+              'assets/itenas.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Center(
             child: Container(
-              width: 300, 
-              height: 300, 
+              width: 300,
+              height: 300,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.9),
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
-                    offset: Offset(0, 4), 
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/login_image.png', 
+                    'assets/login_image.png',
                     height: 80,
                     width: 80,
                   ),
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelText: 'Enter Your Code',
                             border: OutlineInputBorder(),
                           ),
-                          maxLength: 9, 
+                          maxLength: 9,
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                             padding: EdgeInsets.symmetric(vertical: 15),
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2), 
+                              borderRadius: BorderRadius.circular(2),
                             ),
                           ),
                         ),

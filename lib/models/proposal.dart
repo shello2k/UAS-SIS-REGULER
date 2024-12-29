@@ -1,17 +1,19 @@
 class Proposal {
+  String category;
   String title;
   String details;
   String status;
 
   Proposal({
+    required this.category,
     required this.title,
     required this.details,
     required this.status,
   });
 
-  // A method to convert a Proposal into a map, for later use (optional for future expansions)
   Map<String, dynamic> toMap() {
     return {
+      'category': category,
       'title': title,
       'details': details,
       'status': status,

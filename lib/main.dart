@@ -6,6 +6,7 @@ import 'package:flutter_application_1/pages/adminn_dashboard.dart';
 import 'package:flutter_application_1/pages/list_of_request.dart';
 import 'package:flutter_application_1/pages/new_request.dart';
 import 'package:flutter_application_1/pages/notification_page.dart';
+import 'package:flutter_application_1/pages/student_dashboard.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
 import 'login_page.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: NewRequest(), // Halaman utama Anda
+      home: StudentDashboard(), // Halaman utama Anda
     );
   }
 }

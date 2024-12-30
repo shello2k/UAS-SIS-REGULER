@@ -31,8 +31,9 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 children: [
                   Image.asset(
-                    'assets/login_image.png', // Pastikan file ada di folder assets
-                    height: 80,
+                    'assets/login_image.png',
+                    width: 160,
+                    height: 160,
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -51,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                 margin: EdgeInsets.symmetric(horizontal: 24),
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[300], // Warna abu-abu untuk kotak
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(

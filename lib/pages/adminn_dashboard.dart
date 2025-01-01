@@ -100,7 +100,7 @@ class AdminDashboard extends StatelessWidget {
                         .toList(),
                   ),
                   SizedBox(height: 16),
-                  
+
                 ],
               ),
             ),
@@ -181,6 +181,15 @@ class AdminDashboard extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

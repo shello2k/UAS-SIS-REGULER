@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+/*
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/app_state.dart';
 import 'package:flutter_application_1/models/proposal.dart';
-import 'package:flutter_application_1/widgets/bottom_navbar.dart'; // Sesuaikan dengan lokasi file bottom_navbar.dart
+import 'package:flutter_application_1/widgets/bottom_navbar.dart'; // masih statis
+*/
 
 class StudentDashboard extends StatefulWidget {
   @override

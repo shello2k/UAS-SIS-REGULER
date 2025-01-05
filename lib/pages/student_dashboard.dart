@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 /*
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/app_state.dart';
@@ -33,12 +34,20 @@ class _StudentDashboardState extends State<StudentDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Dashboard Mahasiswa',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.orange,
-      ),
+          title: const Text(
+            'Dashboard Mahasiswa',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.orange,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+            ),
+          ]),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

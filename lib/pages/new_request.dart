@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:art_sweetalert/art_sweetalert.dart';
 
 class NewRequest extends StatefulWidget {
   const NewRequest({Key? key}) : super(key: key);
@@ -10,44 +14,45 @@ class NewRequest extends StatefulWidget {
 class _NewRequestState extends State<NewRequest> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _recipientController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _requestDateController = TextEditingController();
-  String? _selectedProposalType;
   String? _selectedCategory;
-  String? _selectedPerenima;
+  String? _selectedPenerima;
 
-//contoh nya
-  final List<String> _proposalTypes = [
-    'Kegiatan',
-    'Penelitian',
-    'Pengabdian Masyarakat'
-  ];
   final List<String> _categories = ['Teknologi', 'Sosial', 'Budaya'];
   final List<String> _penerima = ['Kaprodi', 'Fakultas'];
-  // Date Picker
-  Future<void> _pickDate(
-      BuildContext context, TextEditingController controller) async {
-    DateTime? pickedDate = await showDatePicker(
+
+  late String dateCreate;
+
+  @override
+  void initState() {
+    super.initState();
+    dateCreate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    _requestDateController.text = dateCreate; // Set the current date
+  }
+
+  // Function to show alert dialog using ArtSweetAlert
+  void _showAlertDialog(String message) {
+    ArtSweetAlert.show(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      artDialogArgs: ArtDialogArgs(
+        type: ArtSweetAlertType.danger,
+        title: "Peringatan",
+        text: message,
+        confirmButtonText: "OK",
+      ),
     );
-    if (pickedDate != null) {
-      setState(() {
-        controller.text =
-            "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Request'),
+        title: Text(
+          'New Request',
+          style: GoogleFonts.poppins(),
+        ),
         backgroundColor: Colors.orange,
       ),
       body: Padding(
@@ -58,22 +63,23 @@ class _NewRequestState extends State<NewRequest> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Masukan penerima',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 DropdownButtonFormField<String>(
-                  value: _selectedPerenima,
+                  value: _selectedPenerima,
                   hint: const Text('Pilih jenis penerima'),
                   items: _penerima.map((String type) {
                     return DropdownMenuItem<String>(
                       value: type,
-                      child: Text(type),
+                      child: Text(type, style: GoogleFonts.poppins()),
                     );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedPerenima = value;
+                      _selectedPenerima = value;
                     });
                   },
                   validator: (value) {
@@ -84,14 +90,25 @@ class _NewRequestState extends State<NewRequest> {
                   },
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Judul Proposal',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Masukkan judul proposal',
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -99,75 +116,13 @@ class _NewRequestState extends State<NewRequest> {
                     }
                     return null;
                   },
+                  style: GoogleFonts.poppins(),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Jenis Proposal',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                DropdownButtonFormField<String>(
-                  value: _selectedProposalType,
-                  hint: const Text('Pilih jenis proposal'),
-                  items: _proposalTypes.map((String type) {
-                    return DropdownMenuItem<String>(
-                      value: type,
-                      child: Text(type),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedProposalType = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Silakan pilih jenis proposal';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Deskripsi Proposal',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    hintText: 'Masukkan deskripsi proposal',
-                  ),
-                  maxLines: 4,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Silakan masukkan deskripsi proposal';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Tanggal Pengajuan',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                TextFormField(
-                  controller: _requestDateController,
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    hintText: 'Pilih tanggal pengajuan',
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () => _pickDate(context, _requestDateController),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Silakan pilih tanggal pengajuan';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Kategori Proposal',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
@@ -175,7 +130,7 @@ class _NewRequestState extends State<NewRequest> {
                   items: _categories.map((String category) {
                     return DropdownMenuItem<String>(
                       value: category,
-                      child: Text(category),
+                      child: Text(category, style: GoogleFonts.poppins()),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -190,6 +145,62 @@ class _NewRequestState extends State<NewRequest> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 16),
+                Text(
+                  'Deskripsi Proposal',
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    hintText: 'Masukkan deskripsi proposal',
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
+                  maxLines: 4,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Silakan masukkan deskripsi proposal';
+                    }
+                    return null;
+                  },
+                  style: GoogleFonts.poppins(),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Tanggal Pengajuan',
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                TextFormField(
+                  controller: _requestDateController,
+                  readOnly: true,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    hintText: 'Tanggal pengajuan',
+                    suffixIcon: const Icon(FontAwesomeIcons.calendarAlt),
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Silakan pilih tanggal pengajuan';
+                    }
+                    return null;
+                  },
+                  style: GoogleFonts.poppins(),
+                ),
                 const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
@@ -200,9 +211,33 @@ class _NewRequestState extends State<NewRequest> {
                           const SnackBar(
                               content: Text('Proposal berhasil diajukan!')),
                         );
+                      } else {
+                        // Show alert dialog using ArtSweetAlert if validation fails
+                        _showAlertDialog(
+                            'Silakan isi semua field yang diperlukan.');
                       }
                     },
-                    child: const Text('Ajukan Proposal'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 5, // Efek bayangan
+                      shadowColor: Colors.black.withOpacity(0.2),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(width: 8),
+                        Text(
+                          'Ajukan Proposal',
+                          style: GoogleFonts.poppins(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

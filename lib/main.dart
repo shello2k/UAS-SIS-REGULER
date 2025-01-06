@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // Untuk kReleaseMode
+import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_application_1/pages/admin_dashboard.dart';
 import 'package:flutter_application_1/pages/adminn_dashboard.dart';
 import 'package:flutter_application_1/pages/list_of_request.dart';
 import 'package:flutter_application_1/pages/new_request.dart';
 import 'package:flutter_application_1/pages/notification_page.dart';
+import 'package:flutter_application_1/pages/student_dashboard.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
 import 'login_page.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery: true, // Integrasi dengan DevicePreview
+      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),

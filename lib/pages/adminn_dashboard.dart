@@ -45,6 +45,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
         backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
+          ),
+        ],
       ),
       body: _buildPage(),
       bottomNavigationBar: CrystalNavigationBar(

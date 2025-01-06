@@ -11,15 +11,29 @@ import 'package:provider/provider.dart';
 import 'app_state.dart';
 import 'login_page.dart';
 
-void main() => runApp(
-      DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => ChangeNotifierProvider(
-          create: (_) => AppState(),
-          child: MyApp(),
-        ),
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'pages/adminn_dashboard.dart';
+import 'pages/student_dashboard.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ).catchError((error) {
+    print('Error initializing Firebase: $error');
+  });
+
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => ChangeNotifierProvider(
+        create: (_) => AppState(),
+        child: MyApp(),
       ),
-    );
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -27,12 +41,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
+      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: NewRequest(), // Halaman utama Anda
+      home: LoginPage(),
+      routes: {
+        'login': (context) => LoginPage(),
+        'admin_dashboard': (context) => AdminDashboard(),
+        'student_dashboard': (context) => StudentDashboard(),
+        'head_dashboard': (context) => HeadDashboard(),
+        'faculty_dashboard': (context) => FacultyDashboard(),
+      },
     );
   }
 }

@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,12 +12,62 @@ class _LoginPageState extends State<LoginPage> {
   String? _email;
   String? _password;
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login berhasil!')),
-      );
+      try {
+        final userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email!,
+          password: _password!,
+        );
+
+        if (_email == 'admin123@gmail.com') {
+          Navigator.pushReplacementNamed(context, 'admin_dashboard');
+        } else {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            String email = user.email!;
+
+            QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+                .collection('users')
+                .where('email', isEqualTo: email)
+                .get();
+
+            if (userSnapshot.docs.isNotEmpty) {
+              DocumentSnapshot userDoc = userSnapshot.docs[0];
+
+              if (userDoc.data() != null && userDoc['role'] != null) {
+                String role = userDoc['role'];
+
+                if (role == 'student') {
+                  Navigator.pushReplacementNamed(context, 'student_dashboard');
+                } else if (role == 'kaprodi') {
+                  Navigator.pushReplacementNamed(context, 'head_dashboard');
+                } else if (role == 'fakultas') {
+                  Navigator.pushReplacementNamed(context, 'faculty_dashboard');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Unknown role')),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Role not found in user data')),
+                );
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('User not found in Firestore')),
+              );
+            }
+          }
+        }
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.message}')),
+        );
+      }
     }
   }
 

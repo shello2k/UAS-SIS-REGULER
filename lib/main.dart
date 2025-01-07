@@ -9,7 +9,7 @@ import 'login_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'pages/adminn_dashboard.dart';
+import 'pages/admin_dashboard.dart';
 import 'pages/student_dashboard.dart';
 
 void main() async {

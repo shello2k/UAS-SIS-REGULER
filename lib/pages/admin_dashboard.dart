@@ -8,8 +8,8 @@ class AdminPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
-    final codeController = TextEditingController();  
-    String? selectedRole;  
+    final codeController = TextEditingController();
+    String? selectedRole;
 
     void _addUser() {
       final code = codeController.text;
@@ -19,7 +19,7 @@ class AdminPage extends StatelessWidget {
         ));
         return;
       }
-      final user = User(name: code, role: selectedRole!);  
+      final user = User(name: code, role: selectedRole!);
       appState.addUser(user);
       codeController.clear();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -28,16 +28,16 @@ class AdminPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Admin Dashboard')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: codeController,
-              decoration: InputDecoration(labelText: 'NIM / NIP (contoh, 162022035)'),
+              decoration:
+                  InputDecoration(labelText: 'NIM / NIP (contoh, 162022035)'),
               keyboardType: TextInputType.number,
-              maxLength: 9,  
+              maxLength: 9,
             ),
             SizedBox(height: 20),
             DropdownButton<String>(

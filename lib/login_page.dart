@@ -1,8 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/student_dashboard.dart';
-import 'package:flutter_application_1/pages/head_dashboard.dart';
-import 'package:flutter_application_1/pages/faculty_dashboard.dart';
-import 'package:flutter_application_1/pages/admin_dashboard.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,34 +9,63 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  String? _code;
+  String? _email;
+  String? _password;
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (_code == '162022001') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (ctx) => StudentDashboard()),
+      try {
+        final userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email!,
+          password: _password!,
         );
-      } else if (_code == '162022002') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (ctx) => HeadDashboard()),
-        );
-      } else if (_code == '162022003') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (ctx) => FacultyDashboard()),
-        );
-      } else if (_code == 'kodeAdmin') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (ctx) => AdminPage()), 
-        );
-      } else {
+
+        if (_email == 'admin123@gmail.com') {
+          Navigator.pushReplacementNamed(context, 'admin_dashboard');
+        } else {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            String email = user.email!;
+
+            QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+                .collection('users')
+                .where('email', isEqualTo: email)
+                .get();
+
+            if (userSnapshot.docs.isNotEmpty) {
+              DocumentSnapshot userDoc = userSnapshot.docs[0];
+
+              if (userDoc.data() != null && userDoc['role'] != null) {
+                String role = userDoc['role'];
+
+                if (role == 'student') {
+                  Navigator.pushReplacementNamed(context, 'student_dashboard');
+                } else if (role == 'kaprodi') {
+                  Navigator.pushReplacementNamed(context, 'head_dashboard');
+                } else if (role == 'fakultas') {
+                  Navigator.pushReplacementNamed(context, 'faculty_dashboard');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Unknown role')),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Role not found in user data')),
+                );
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('User not found in Firestore')),
+              );
+            }
+          }
+        }
+      } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid code. Please try again.')),
+          SnackBar(content: Text('Login failed: ${e.message}')),
         );
       }
     }
@@ -47,83 +74,154 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/background_image.png', 
-              fit: BoxFit.cover,
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 300, 
-              height: 300, 
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4), 
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Logo Itenas
+              Column(
                 children: [
                   Image.asset(
-                    'assets/login_image.png', 
-                    height: 80,
-                    width: 80,
+                    'assets/login_image.png',
+                    width: 160,
+                    height: 160,
                   ),
-                  SizedBox(height: 20),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Code',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLength: 9, 
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Code cannot be empty';
-                            } else if (value.length != 9) {
-                              return 'Code must be 9 digits long';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _code = value;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _login,
-                          child: Text('Login'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            minimumSize: Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2), 
-                            ),
-                          ),
-                        ),
-                      ],
+                  SizedBox(height: 8),
+                  Text(
+                    'Institut Teknologi Nasional',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
+                  SizedBox(height: 16),
                 ],
               ),
-            ),
+              // Kotak Form Login
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Teks Login Title
+                    Text(
+                      'Login into your account',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // Email Input
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Email Address',
+                              hintText: 'Enter your Email',
+                              prefixIcon:
+                                  Icon(Icons.email, color: Colors.orange),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Email cannot be empty';
+                              }
+                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                  .hasMatch(value)) {
+                                return 'Enter a valid email';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _email = value;
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          // Password Input
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              hintText: 'Enter your password',
+                              prefixIcon:
+                                  Icon(Icons.lock, color: Colors.orange),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            obscureText: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password cannot be empty';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _password = value;
+                            },
+                          ),
+                          SizedBox(height: 8),
+                          // Forgot Password
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                // Logika forgot password
+                              },
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(color: Colors.orange),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          // Tombol Login
+                          ElevatedButton(
+                            onPressed: _login,
+                            child: Text('Login Now'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              minimumSize: Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

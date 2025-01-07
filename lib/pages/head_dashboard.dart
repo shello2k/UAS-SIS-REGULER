@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/app_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HeadDashboard extends StatelessWidget {
   @override
@@ -17,7 +18,8 @@ class HeadDashboard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Category: ${proposal.category}', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Category: ${proposal.category}',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 SizedBox(height: 10),
                 Text('Details: ${proposal.details}'),
               ],
@@ -50,7 +52,26 @@ class HeadDashboard extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Head of Study Program Dashboard')),
+      appBar: AppBar(
+        title: Text(
+          'Head of Study Program Dashboard',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -63,7 +84,8 @@ class HeadDashboard extends StatelessWidget {
                   final proposal = appState.getProposals()[index];
                   return Card(
                     child: ListTile(
-                      onTap: () => _showProposalDetails(context, proposal, index),
+                      onTap: () =>
+                          _showProposalDetails(context, proposal, index),
                       title: Text('${proposal.category} - ${proposal.title}'),
                       subtitle: Text(proposal.details),
                     ),

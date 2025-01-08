@@ -20,13 +20,13 @@ class _StudentDashboardState extends State<StudentDashboard> {
       _selectedIndex = index;
     });
 
-    // Tambahkan navigasi sesuai dengan index yang dipilih
     if (index == 1) {
-      // Navigasi ke halaman Profile
-      Navigator.pushNamed(context, '/profile');
+      // TODO: LOGIC BACKEND UNTUK NAVIGASI PROFILE PAGE
+      Navigator.pushNamed(context, '/profile'); // Navigasi ke halaman Profile
     } else if (index == 2) {
-      // Navigasi ke halaman Ajukan Proposal Baru
-      Navigator.pushNamed(context, '/ajukan-proposal');
+      // TODO: LOGIC BACKEND UNTUK NAVIGASI AJUKAN PROPOSAL PAGE
+      Navigator.pushNamed(
+          context, '/ajukan-proposal'); // Navigasi ke halaman Ajukan Proposal
     }
   }
 
@@ -34,20 +34,21 @@ class _StudentDashboardState extends State<StudentDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            'Dashboard Mahasiswa',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Text(
+          'Dashboard Mahasiswa',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
           ),
-          backgroundColor: Colors.orange,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacementNamed(context, 'login');
-              },
-            ),
-          ]),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -100,18 +101,34 @@ class _StudentDashboardState extends State<StudentDashboard> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.orange.withOpacity(0.4),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(Icons.add, color: Colors.white),
+            ),
+            label: 'Ajukan Proposal',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Ajukan Proposal',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -230,7 +247,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      // Navigasi ke halaman edit dan resend proposal
+                      // TODO: LOGIC BACKEND UNTUK EDIT DAN RESEND
+                      Navigator.pushNamed(context, '/edit-proposal');
                     },
                     child: const Text(
                       'Edit and Resend',
@@ -245,7 +263,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      // Logika untuk menghapus proposal
+                      _showDeleteDialog(context);
                     },
                     child: const Text(
                       'Delete',
@@ -258,6 +276,34 @@ class _StudentDashboardState extends State<StudentDashboard> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi'),
+          content:
+              const Text('Apakah Anda yakin ingin menghapus proposal ini?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: LOGIC BACKEND UNTUK DELETE PROPOSAL
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Iya'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -3,21 +3,23 @@
 import 'package:http/http.dart' as http;
 
 class DataService {
-   Future insertHimpunan(String appid, String penerima, String judul_proposal, String kategori_proposal, String desc_proposal, String tgl_pengajuan, String status_proposal) async {
+   Future insertSurat(String appid, String penerima, String judul_proposal, String kategory_proposal, String deskripsi_proposal, String tanggal_pengajuan, String status_surat, String kode_proposal, String feedback_proposal) async {
       String uri = 'https://io.etter.cloud/v4/insert';
 
       try {
          final response = await http.post(Uri.parse(uri), body: {
             'token': '6717db9aec5074ec8261d698',
             'project': 'uas-sis',
-            'collection': 'himpunan',
+            'collection': 'surat',
             'appid': appid,
             'penerima': penerima,
             'judul_proposal': judul_proposal,
-            'kategori_proposal': kategori_proposal,
-            'desc_proposal': desc_proposal,
-            'tgl_pengajuan': tgl_pengajuan,
-            'status_proposal': status_proposal
+            'kategory_proposal': kategory_proposal,
+            'deskripsi_proposal': deskripsi_proposal,
+            'tanggal_pengajuan': tanggal_pengajuan,
+            'status_surat': status_surat,
+            'kode_proposal': kode_proposal,
+            'feedback_proposal': feedback_proposal
          });
 
          if (response.statusCode == 200) {

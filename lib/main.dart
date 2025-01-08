@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // Untuk kReleaseMode
+import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_application_1/pages/faculty_dashboard.dart';
 import 'package:flutter_application_1/pages/head_dashboard.dart';

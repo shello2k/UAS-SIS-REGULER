@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AdminDashboard extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
@@ -106,134 +108,161 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
-  Widget _buildUserForm() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Create user account',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _nameController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Name',
-              prefixIcon:
-                  Icon(FontAwesomeIcons.user), // Font Awesome icon for name
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _nimController, // NIM field
-            decoration: InputDecoration(
-              labelText: 'NIM/NIP',
-              prefixIcon: Icon(FontAwesomeIcons.idCard),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          DropdownButtonFormField(
-            decoration: InputDecoration(
-              labelText: 'Department',
-              prefixIcon: Icon(FontAwesomeIcons
-                  .building), // Font Awesome icon for department
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Text('Students Association'),
-                value: 'Students Association',
-              ),
-              DropdownMenuItem(
-                child: Text('Head of Study Program'),
-                value: 'Head of Study Program',
-              ),
-              DropdownMenuItem(
-                child: Text('Faculty'),
-                value: 'Faculty',
-              ),
-            ],
-            onChanged: (value) {},
-          ),
-          SizedBox(height: 16),
-          DropdownButtonFormField(
-            decoration: InputDecoration(
-              labelText: 'Faculty',
-              prefixIcon: Icon(FontAwesomeIcons.university),
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Text('FTI'),
-                value: 'FTI',
-              ),
-              DropdownMenuItem(
-                child: Text('FAD'),
-                value: 'FAD',
-              ),
-              DropdownMenuItem(
-                child: Text('FTSP'),
-                value: 'FTSP',
-              ),
-            ],
-            onChanged: (value) {},
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _programStudyController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Study Program',
-              prefixIcon: Icon(FontAwesomeIcons.book),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _emailController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(FontAwesomeIcons.envelope),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _passwordController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon:
-                  Icon(FontAwesomeIcons.lock), // Font Awesome icon for password
-              border: OutlineInputBorder(),
-            ),
-            obscureText: true,
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Submit logic
-              // You can access the values using the controllers
-              String name = _nameController.text;
-              String nim = _nimController.text;
-              String programStudy = _programStudyController.text;
-              String email = _emailController.text;
-              String password = _passwordController.text;
 
-              // Implement your submission logic here
-            },
-            style: ElevatedButton.styleFrom(iconColor: Colors.orange),
-            child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
-          )
-        ],
-      ),
-    );
-  }
+Widget _buildUserForm() {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String? _selectedDepartment = 'Students Association'; 
+  String? _selectedFaculty = 'FTI';
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Create user account',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            labelText: 'Name',
+            prefixIcon: Icon(FontAwesomeIcons.user),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        DropdownButtonFormField(
+          decoration: InputDecoration(
+            labelText: 'Department',
+            prefixIcon: Icon(FontAwesomeIcons.building),
+            border: OutlineInputBorder(),
+          ),
+          value: _selectedDepartment,
+          items: [
+            DropdownMenuItem(
+              child: Text('Students Association'),
+              value: 'Students Association',
+            ),
+            DropdownMenuItem(
+              child: Text('Head of Study Program'),
+              value: 'Head of Study Program',
+            ),
+            DropdownMenuItem(
+              child: Text('Faculty'),
+              value: 'Faculty',
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedDepartment = value as String?;
+            });
+          },
+        ),
+        SizedBox(height: 16),
+        DropdownButtonFormField(
+          decoration: InputDecoration(
+            labelText: 'Faculty',
+            prefixIcon: Icon(FontAwesomeIcons.university),
+            border: OutlineInputBorder(),
+          ),
+          value: _selectedFaculty,
+          items: [
+            DropdownMenuItem(
+              child: Text('FTI'),
+              value: 'FTI',
+            ),
+            DropdownMenuItem(
+              child: Text('FAD'),
+              value: 'FAD',
+            ),
+            DropdownMenuItem(
+              child: Text('FTSP'),
+              value: 'FTSP',
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedFaculty = value as String?;
+            });
+          },
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _programStudyController,
+          decoration: InputDecoration(
+            labelText: 'Study Program',
+            prefixIcon: Icon(FontAwesomeIcons.book),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _emailController,
+          decoration: InputDecoration(
+            labelText: 'Email',
+            prefixIcon: Icon(FontAwesomeIcons.envelope),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _passwordController,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            prefixIcon: Icon(FontAwesomeIcons.lock),
+            border: OutlineInputBorder(),
+          ),
+          obscureText: true,
+        ),
+        SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () async {
+            try {
+              // Authentikasi pengguna
+              UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text,
+              );
+
+              // Data yang akan disimpan
+              final userData = {
+                'uid': userCredential.user?.uid,
+                'name': _nameController.text,
+                'department': _selectedDepartment,
+                'faculty': _selectedFaculty,
+                'prodi': _programStudyController.text,
+                'email': _emailController.text,
+              };
+
+              // Simpan ke Firestore
+              await _firestore.collection('users').add(userData);
+
+              // Berikan feedback kepada pengguna
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('User data saved successfully!')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to save data: $e')),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(iconColor: Colors.orange),
+          child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
 //ini page kedua yang bagian kategori itu lhoooo
   Widget _buildCategoryForm() {

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-/*
-import 'package:provider/provider.dart';
-import 'package:flutter_application_1/app_state.dart';
-import 'package:flutter_application_1/models/proposal.dart';
-import 'package:flutter_application_1/widgets/bottom_navbar.dart'; // masih statis
-*/
+import 'package:flutter_application_1/pages/edit_of_request.dart';
+import 'package:flutter_application_1/pages/new_request.dart';
 
 class StudentDashboard extends StatefulWidget {
   @override
@@ -24,30 +20,56 @@ class _StudentDashboardState extends State<StudentDashboard> {
     if (index == 1) {
       // Navigasi ke halaman Profile
       Navigator.pushNamed(context, '/profile');
-    } else if (index == 2) {
-      // Navigasi ke halaman Ajukan Proposal Baru
-      Navigator.pushNamed(context, '/ajukan-proposal');
     }
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Hapus'),
+          content:
+              const Text('Apakah Anda yakin ingin menghapus proposal ini?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: Implement logic to delete the proposal
+                Navigator.of(context).pop(); // Tutup dialog setelah menghapus
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            'Dashboard Mahasiswa',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Text(
+          'Dashboard Mahasiswa',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
           ),
-          backgroundColor: Colors.orange,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacementNamed(context, 'login');
-              },
-            ),
-          ]),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -109,15 +131,22 @@ class _StudentDashboardState extends State<StudentDashboard> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Ajukan Proposal',
-          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.orange,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewRequest()),
+          );
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.orange,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -230,7 +259,22 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      // Navigasi ke halaman edit dan resend proposal
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditOfList(
+                            title:
+                                'PEMINJAMAN RUANGAN UNTUK KEGIATAN STUDI BANDING HIMSI',
+                            description: 'Deskripsi lama...',
+                            requestDate: '09/12/2024 - 11:11 AM',
+                            deadline: '10/12/2024 - 11:11 AM',
+                          ),
+                        ),
+                      ).then((updatedDescription) {
+                        if (updatedDescription != null) {
+                          // TODO: Update the proposal with the new description
+                        }
+                      });
                     },
                     child: const Text(
                       'Edit and Resend',
@@ -245,7 +289,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      // Logika untuk menghapus proposal
+                      _showDeleteConfirmationDialog(
+                          context); // Tampilkan dialog konfirmasi
                     },
                     child: const Text(
                       'Delete',

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';  
 import 'package:flutter_application_1/pages/edit_of_request.dart';  
 import 'package:flutter_application_1/pages/new_request.dart';  
-import 'package:flutter_application_1/models/restapi.dart'; // Import your DataService  
-import 'package:flutter_application_1/models/model_surat.dart'; // Import your DataService  
-import 'dart:convert'; // For JSON encoding/decoding  
+import 'package:flutter_application_1/models/restapi.dart'; 
+import 'package:flutter_application_1/models/model_surat.dart'; 
+import 'dart:convert'; 
 import 'package:intl/intl.dart';
   
 class StudentDashboard extends StatefulWidget {  
@@ -15,62 +15,58 @@ class StudentDashboard extends StatefulWidget {
 class _StudentDashboardState extends State<StudentDashboard> {  
   int _selectedIndex = 0;  
   List<SuratModel> proposals = [];  
-  final String token = '6717db9aec5074ec8261d698'; // Your API token  
-  final String project = 'uas-sis'; // Your project name  
-  final String collection = 'surat'; // Your collection name  
-  final String appid = '677eb6dae9cc622b8bd171ea'; // Your app ID  
+  final String token = '6717db9aec5074ec8261d698';  
+  final String project = 'uas-sis';   
+  final String collection = 'surat'; 
+  final String appid = '677eb6dae9cc622b8bd171ea';  
   
   @override  
   void initState() {  
     super.initState();  
-    _fetchProposals(); // Fetch proposals when the dashboard is initialized  
+    _fetchProposals(); // declare buat ngambil proposal
   }  
 
-  // Function to sort proposals by date  
+  // sort proposal by date
 void _sortProposalsByDate() {  
   setState(() {  
     proposals.sort((a, b) {  
-      // Convert the date strings to DateTime objects for comparison  
       DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.tanggal_pengajuan);  
       DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.tanggal_pengajuan);  
-      return dateA.compareTo(dateB); // Ascending order  
+      return dateA.compareTo(dateB);   
     });  
   });  
 }  
 
   
-  // Fetch proposals from the API  
+  // ngambil proposal
   Future<void> _fetchProposals() async {  
     try {  
       final response = await DataService().selectAll(token, project, collection, appid);  
-      final List<dynamic> data = json.decode(response); // Decode the JSON response  
+      final List<dynamic> data = json.decode(response); 
       setState(() {  
-        proposals = data.map((item) => SuratModel.fromJson(item)).toList(); // Convert to SuratModel list  
+        proposals = data.map((item) => SuratModel.fromJson(item)).toList();  
       });  
     } catch (e) {  
       print('Error fetching proposals: $e');  
     }  
   }  
-  
-  // Create a new proposal  
-  // Create a new proposal    
-  // Create a new proposal    
+    
   Future<void> _createProposal(SuratModel proposal) async {    
     try {    
       await DataService().insertSurat(    
-        appid, // Pass the app ID    
+        appid,  
         proposal.penerima,    
         proposal.judul_proposal,    
         proposal.kategory_proposal,    
         proposal.deskripsi_proposal,    
         proposal.tanggal_pengajuan,    
         proposal.status_surat,    
-        proposal.kode_proposal, // Pass the kode_proposal    
-        proposal.feedback_proposal ?? '', // Pass feedback_proposal, default to empty string if null    
+        proposal.kode_proposal, 
+        proposal.feedback_proposal ?? '', 
       );      
     
-      // Refresh the list after creating    
-      await _fetchProposals(); // Fetch proposals again to refresh the list    
+      // refresh list proposal   
+      await _fetchProposals(); 
     } catch (e) {    
       print('Error creating proposal: $e');    
     }    
@@ -78,7 +74,6 @@ void _sortProposalsByDate() {
 
 
   
-  // Update an existing proposal  
   Future<void> _updateProposal(String id, SuratModel proposal) async {  
     try {  
       await DataService().updateId(  
@@ -89,18 +84,16 @@ void _sortProposalsByDate() {
         'desc_proposal', proposal.deskripsi_proposal,  
         token, project, collection, appid, id  
       );  
-      // Add other fields as necessary  
-      _fetchProposals(); // Refresh the list after updating  
+      _fetchProposals(); // refresh list setelah edit proposal
     } catch (e) {  
       print('Error updating proposal: $e');  
     }  
   }  
   
-  // Delete a proposal  
   Future<void> _deleteProposal(String id) async {  
     try {  
       await DataService().removeId(token, project, collection, appid, id);  
-      _fetchProposals(); // Refresh the list after deletion  
+      _fetchProposals(); // refresh list beres delete
     } catch (e) {  
       print('Error deleting proposal: $e');  
     }  
@@ -111,7 +104,6 @@ void _sortProposalsByDate() {
       _selectedIndex = index;  
     });  
   
-    // Navigate to the profile page  
     if (index == 1) {  
       Navigator.pushNamed(context, '/profile');  
     }  
@@ -127,14 +119,14 @@ void _sortProposalsByDate() {
           actions: [  
             TextButton(  
               onPressed: () {  
-                Navigator.of(context).pop(); // Close dialog  
+                Navigator.of(context).pop(); 
               },  
               child: const Text('Batal'),  
             ),  
             TextButton(  
               onPressed: () {  
-                _deleteProposal(id); // Call delete function  
-                Navigator.of(context).pop(); // Close dialog  
+                _deleteProposal(id); 
+                Navigator.of(context).pop(); 
               },  
               child: const Text('Hapus'),  
             ),  
@@ -183,13 +175,12 @@ void _sortProposalsByDate() {
                   children: [  
                     IconButton(  
                       onPressed: () {  
-                        // Logic for search icon  
                       },  
                       icon: const Icon(Icons.search),  
                     ),  
                     IconButton(    
                       onPressed: () {    
-                        _sortProposalsByDate(); // Call the sorting function    
+                        _sortProposalsByDate(); // tombol sorting    
                       },    
                       icon: const Icon(Icons.sort),    
                     ),  
@@ -232,7 +223,7 @@ void _sortProposalsByDate() {
               ).then((newProposal) {    
                 if (newProposal != null) {    
                   setState(() {    
-                    proposals.add(newProposal); // Add the new proposal to the list    
+                    proposals.add(newProposal);   
                   });    
                 }    
               });    

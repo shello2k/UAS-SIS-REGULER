@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Untuk kReleaseMode
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter_application_1/pages/bka_dashboard.dart';
+import 'package:flutter_application_1/pages/bku_dashboard.dart';
+import 'package:flutter_application_1/pages/detail_mail.dart';
 import 'package:flutter_application_1/pages/faculty_dashboard.dart';
 import 'package:flutter_application_1/pages/head_dashboard.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +52,9 @@ class MyApp extends StatelessWidget {
         'student_dashboard': (context) => StudentDashboard(),
         'head_dashboard': (context) => HeadDashboard(),
         'faculty_dashboard': (context) => FacultyDashboard(),
+        'bku_dashboard': (context) => BkuDashboard(),
+        'bka_dashboard': (context) => BkaDashboard(),
+        'detail_mail': (context) => DetailMail(),
       },
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
+import 'profile_page.dart'; // Import your ProfilePage
 
 class BkaDashboard extends StatefulWidget {
   @override
@@ -56,6 +57,16 @@ class _BkaDashboardState extends State<BkaDashboard> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navigate to ProfilePage when the second item is tapped
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                ProfilePage(isStudent: true)), // Pass any required parameters
+      );
+    }
   }
 
   void _navigateToDetailMail(BuildContext context) {

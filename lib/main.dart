@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'pages/admin_dashboard.dart';
 import 'pages/student_dashboard.dart';
+import 'pages/profile_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: LoginPage(),
+      home: StudentDashboard(),
       routes: {
         'login': (context) => LoginPage(),
         'admin_dashboard': (context) => AdminDashboard(),
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
         'bku_dashboard': (context) => BkuDashboard(),
         'bka_dashboard': (context) => BkaDashboard(),
         'detail_mail': (context) => DetailMail(),
+        'profile_page': (context) => ProfilePage(isStudent: true),
       },
     );
   }

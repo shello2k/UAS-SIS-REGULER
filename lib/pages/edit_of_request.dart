@@ -69,6 +69,7 @@ class _EditOfListState extends State<EditOfList> {
       appBar: AppBar(
         title: const Text('Edit Proposal'),
         backgroundColor: Colors.orange,
+        automaticallyImplyLeading: true, // Tombol kembali akan muncul
         actions: [
           IconButton(
             icon: const Icon(Icons.save),

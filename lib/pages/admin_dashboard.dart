@@ -3,7 +3,6 @@ import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -46,8 +45,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, 'login');
+              // Show confirmation dialog
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Alert!"),
+                    content: Text("are you sure you want to log out?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacementNamed(context, 'login');
+                        },
+                        child: Text("Yes, log out"),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
@@ -102,158 +124,155 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
+  Widget _buildUserForm() {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
 
-Widget _buildUserForm() {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+    String? _selectedDepartment = 'Students Association';
+    String? _selectedFaculty = 'FTI';
 
-  String? _selectedDepartment = 'Students Association'; 
-  String? _selectedFaculty = 'FTI';
-
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Create user account',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 16),
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            labelText: 'Name',
-            prefixIcon: Icon(FontAwesomeIcons.user),
-            border: OutlineInputBorder(),
-          ),
-        ),
-        SizedBox(height: 16),
-        DropdownButtonFormField(
-          decoration: InputDecoration(
-            labelText: 'Department',
-            prefixIcon: Icon(FontAwesomeIcons.building),
-            border: OutlineInputBorder(),
-          ),
-          items: [
-            DropdownMenuItem(
-              child: Text('Students Association'),
-              value: 'Students Association',
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Create user account',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            DropdownMenuItem(
-              child: Text('Head of Study Program'),
-              value: 'Head of Study Program',
-            ),
-            DropdownMenuItem(
-              child: Text('Faculty'),
-              value: 'Faculty',
-            ),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _selectedDepartment = value as String?;
-            });
-          },
-        ),
-        SizedBox(height: 16),
-        DropdownButtonFormField(
-          decoration: InputDecoration(
-            labelText: 'Faculty',
-            prefixIcon: Icon(FontAwesomeIcons.university),
-            border: OutlineInputBorder(),
           ),
-          items: [
-            DropdownMenuItem(
-              child: Text('FTI'),
-              value: 'FTI',
+          SizedBox(height: 16),
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'Name',
+              prefixIcon: Icon(FontAwesomeIcons.user),
+              border: OutlineInputBorder(),
             ),
-            DropdownMenuItem(
-              child: Text('FAD'),
-              value: 'FAD',
+          ),
+          SizedBox(height: 16),
+          DropdownButtonFormField(
+            decoration: InputDecoration(
+              labelText: 'Department',
+              prefixIcon: Icon(FontAwesomeIcons.building),
+              border: OutlineInputBorder(),
             ),
-            DropdownMenuItem(
-              child: Text('FTSP'),
-              value: 'FTSP',
+            items: [
+              DropdownMenuItem(
+                child: Text('Students Association'),
+                value: 'Students Association',
+              ),
+              DropdownMenuItem(
+                child: Text('Head of Study Program'),
+                value: 'Head of Study Program',
+              ),
+              DropdownMenuItem(
+                child: Text('Faculty'),
+                value: 'Faculty',
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedDepartment = value as String?;
+              });
+            },
+          ),
+          SizedBox(height: 16),
+          DropdownButtonFormField(
+            decoration: InputDecoration(
+              labelText: 'Faculty',
+              prefixIcon: Icon(FontAwesomeIcons.university),
+              border: OutlineInputBorder(),
             ),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _selectedFaculty = value as String?;
-            });
-          },
-        ),
-        SizedBox(height: 16),
-        TextField(
-          controller: _programStudyController,
-          decoration: InputDecoration(
-            labelText: 'Study Program',
-            prefixIcon: Icon(FontAwesomeIcons.book),
-            border: OutlineInputBorder(),
+            items: [
+              DropdownMenuItem(
+                child: Text('FTI'),
+                value: 'FTI',
+              ),
+              DropdownMenuItem(
+                child: Text('FAD'),
+                value: 'FAD',
+              ),
+              DropdownMenuItem(
+                child: Text('FTSP'),
+                value: 'FTSP',
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedFaculty = value as String?;
+              });
+            },
           ),
-        ),
-        SizedBox(height: 16),
-        TextField(
-          controller: _emailController,
-          decoration: InputDecoration(
-            labelText: 'Email',
-            prefixIcon: Icon(FontAwesomeIcons.envelope),
-            border: OutlineInputBorder(),
+          SizedBox(height: 16),
+          TextField(
+            controller: _programStudyController,
+            decoration: InputDecoration(
+              labelText: 'Study Program',
+              prefixIcon: Icon(FontAwesomeIcons.book),
+              border: OutlineInputBorder(),
+            ),
           ),
-        ),
-        SizedBox(height: 16),
-        TextField(
-          controller: _passwordController,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            prefixIcon: Icon(FontAwesomeIcons.lock),
-            border: OutlineInputBorder(),
+          SizedBox(height: 16),
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              prefixIcon: Icon(FontAwesomeIcons.envelope),
+              border: OutlineInputBorder(),
+            ),
           ),
-          obscureText: true,
-        ),
-        SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () async {
-            try {
-              UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-                email: _emailController.text,
-                password: _passwordController.text,
-              );
+          SizedBox(height: 16),
+          TextField(
+            controller: _passwordController,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              prefixIcon: Icon(FontAwesomeIcons.lock),
+              border: OutlineInputBorder(),
+            ),
+            obscureText: true,
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                UserCredential userCredential =
+                    await _auth.createUserWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                );
 
-              final userData = {
-                'uid': userCredential.user?.uid,
-                'name': _nameController.text,
-                'department': _selectedDepartment,
-                'faculty': _selectedFaculty,
-                'prodi': _programStudyController.text,
-                'email': _emailController.text,
-              };
+                final userData = {
+                  'uid': userCredential.user?.uid,
+                  'name': _nameController.text,
+                  'department': _selectedDepartment,
+                  'faculty': _selectedFaculty,
+                  'prodi': _programStudyController.text,
+                  'email': _emailController.text,
+                };
 
-              // Simpan ke Firestore
-              await _firestore.collection('users').add(userData);
+                // Simpan ke Firestore
+                await _firestore.collection('users').add(userData);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Account Created Successfully!')),
-              );
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to Created Account: $e')),
-              );
-            }
-          },
-          style: ElevatedButton.styleFrom(iconColor: Colors.orange),
-          child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
-        ),
-      ],
-    ),
-  );
-}
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Account Created Successfully!')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to Create Account: $e')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(iconColor: Colors.orange),
+            child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
+          ),
+        ],
+      ),
+    );
+  }
 
-
-
-//ini page kedua yang bagian kategori itu lhoooo
   Widget _buildCategoryForm() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -308,92 +327,93 @@ Widget _buildUserForm() {
   }
 
   Widget _buildUserList() {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'List of Users',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'List of Users',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        SizedBox(height: 16),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore.collection('users').snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
+          SizedBox(height: 16),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firestore.collection('users').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: GoogleFonts.poppins(),
-                  ),
-                );
-              }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  );
+                }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No users found',
-                    style: GoogleFonts.poppins(),
-                  ),
-                );
-              }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No users found',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  );
+                }
 
-              final users = snapshot.data!.docs;
+                final users = snapshot.data!.docs;
 
-              return ListView(
-                children: [
-                  DataTable(
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          'Name',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                return ListView(
+                  children: [
+                    DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(
+                            'Name',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Department',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        DataColumn(
+                          label: Text(
+                            'Department',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
-                      ),
-                    ],
-                    rows: users.map((userDoc) {
-                      final userData = userDoc.data() as Map<String, dynamic>;
-                      return DataRow(
-                        cells: [
-                          DataCell(Text(
-                            userData['name'] ?? 'N/A',
-                            style: GoogleFonts.poppins(),
-                          )),
-                          DataCell(Text(
-                            userData['department'] ?? 'N/A',
-                            style: GoogleFonts.poppins(),
-                          )),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                ],
-              );
-            },
+                      ],
+                      rows: users.map((userDoc) {
+                        final userData = userDoc.data() as Map<String, dynamic>;
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(
+                              userData['name'] ?? 'N/A',
+                              style: GoogleFonts.poppins(),
+                            )),
+                            DataCell(Text(
+                              userData['department'] ?? 'N/A',
+                              style: GoogleFonts.poppins(),
+                            )),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   void _showAddCategoryDialog() {
     final TextEditingController _newCategoryController =
@@ -446,7 +466,7 @@ Widget _buildUserForm() {
     // Optionally, show a snackbar or dialog to confirm deletion
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Category successfully deleted !'),
+        content: Text('Category successfully deleted!'),
       ),
     );
   }

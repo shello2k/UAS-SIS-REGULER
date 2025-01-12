@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AdminDashboard extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
@@ -37,12 +39,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 color: Colors.white,
               ),
             ),
-            IconButton(
-              icon: Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),
-              onPressed: () {
-                // Logout action logic here
-              },
-            )
           ],
         ),
         backgroundColor: Colors.orange,
@@ -106,134 +102,156 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
-  Widget _buildUserForm() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Create user account',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _nameController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Name',
-              prefixIcon:
-                  Icon(FontAwesomeIcons.user), // Font Awesome icon for name
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _nimController, // NIM field
-            decoration: InputDecoration(
-              labelText: 'NIM/NIP',
-              prefixIcon: Icon(FontAwesomeIcons.idCard),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          DropdownButtonFormField(
-            decoration: InputDecoration(
-              labelText: 'Department',
-              prefixIcon: Icon(FontAwesomeIcons
-                  .building), // Font Awesome icon for department
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Text('Students Association'),
-                value: 'Students Association',
-              ),
-              DropdownMenuItem(
-                child: Text('Head of Study Program'),
-                value: 'Head of Study Program',
-              ),
-              DropdownMenuItem(
-                child: Text('Faculty'),
-                value: 'Faculty',
-              ),
-            ],
-            onChanged: (value) {},
-          ),
-          SizedBox(height: 16),
-          DropdownButtonFormField(
-            decoration: InputDecoration(
-              labelText: 'Faculty',
-              prefixIcon: Icon(FontAwesomeIcons.university),
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Text('FTI'),
-                value: 'FTI',
-              ),
-              DropdownMenuItem(
-                child: Text('FAD'),
-                value: 'FAD',
-              ),
-              DropdownMenuItem(
-                child: Text('FTSP'),
-                value: 'FTSP',
-              ),
-            ],
-            onChanged: (value) {},
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _programStudyController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Study Program',
-              prefixIcon: Icon(FontAwesomeIcons.book),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _emailController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(FontAwesomeIcons.envelope),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _passwordController, // Use the controller here
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon:
-                  Icon(FontAwesomeIcons.lock), // Font Awesome icon for password
-              border: OutlineInputBorder(),
-            ),
-            obscureText: true,
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Submit logic
-              // You can access the values using the controllers
-              String name = _nameController.text;
-              String nim = _nimController.text;
-              String programStudy = _programStudyController.text;
-              String email = _emailController.text;
-              String password = _passwordController.text;
 
-              // Implement your submission logic here
-            },
-            style: ElevatedButton.styleFrom(iconColor: Colors.orange),
-            child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
-          )
-        ],
-      ),
-    );
-  }
+Widget _buildUserForm() {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String? _selectedDepartment = 'Students Association'; 
+  String? _selectedFaculty = 'FTI';
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Create user account',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            labelText: 'Name',
+            prefixIcon: Icon(FontAwesomeIcons.user),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        DropdownButtonFormField(
+          decoration: InputDecoration(
+            labelText: 'Department',
+            prefixIcon: Icon(FontAwesomeIcons.building),
+            border: OutlineInputBorder(),
+          ),
+          items: [
+            DropdownMenuItem(
+              child: Text('Students Association'),
+              value: 'Students Association',
+            ),
+            DropdownMenuItem(
+              child: Text('Head of Study Program'),
+              value: 'Head of Study Program',
+            ),
+            DropdownMenuItem(
+              child: Text('Faculty'),
+              value: 'Faculty',
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedDepartment = value as String?;
+            });
+          },
+        ),
+        SizedBox(height: 16),
+        DropdownButtonFormField(
+          decoration: InputDecoration(
+            labelText: 'Faculty',
+            prefixIcon: Icon(FontAwesomeIcons.university),
+            border: OutlineInputBorder(),
+          ),
+          items: [
+            DropdownMenuItem(
+              child: Text('FTI'),
+              value: 'FTI',
+            ),
+            DropdownMenuItem(
+              child: Text('FAD'),
+              value: 'FAD',
+            ),
+            DropdownMenuItem(
+              child: Text('FTSP'),
+              value: 'FTSP',
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedFaculty = value as String?;
+            });
+          },
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _programStudyController,
+          decoration: InputDecoration(
+            labelText: 'Study Program',
+            prefixIcon: Icon(FontAwesomeIcons.book),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _emailController,
+          decoration: InputDecoration(
+            labelText: 'Email',
+            prefixIcon: Icon(FontAwesomeIcons.envelope),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        SizedBox(height: 16),
+        TextField(
+          controller: _passwordController,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            prefixIcon: Icon(FontAwesomeIcons.lock),
+            border: OutlineInputBorder(),
+          ),
+          obscureText: true,
+        ),
+        SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () async {
+            try {
+              UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text,
+              );
+
+              final userData = {
+                'uid': userCredential.user?.uid,
+                'name': _nameController.text,
+                'department': _selectedDepartment,
+                'faculty': _selectedFaculty,
+                'prodi': _programStudyController.text,
+                'email': _emailController.text,
+              };
+
+              // Simpan ke Firestore
+              await _firestore.collection('users').add(userData);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Account Created Successfully!')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to Created Account: $e')),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(iconColor: Colors.orange),
+          child: Text('SAVE', style: GoogleFonts.poppins(fontSize: 16)),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
 //ini page kedua yang bagian kategori itu lhoooo
   Widget _buildCategoryForm() {
@@ -254,12 +272,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  _showAddCategoryDialog(); // Show dialog to add category
+                  _showAddCategoryDialog();
                 },
                 child: Text('ADD'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange, // Button color
-                  foregroundColor: Colors.white, // Text color
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
                 ),
               ),
             ],
@@ -277,7 +295,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   trailing: IconButton(
                     icon: Icon(FontAwesomeIcons.trash),
                     onPressed: () {
-                      _deleteCategory(index); // Call delete function
+                      _deleteCategory(index);
                     },
                   ),
                 );
@@ -290,56 +308,92 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildUserList() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'List of User',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'List of Users',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(height: 16),
-          Expanded(
-            child: ListView(
-              children: [
-                DataTable(
-                  columns: [
-                    DataColumn(
-                      label: Text(
-                        'Name',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: 16),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: _firestore.collection('users').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error: ${snapshot.error}',
+                    style: GoogleFonts.poppins(),
+                  ),
+                );
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No users found',
+                    style: GoogleFonts.poppins(),
+                  ),
+                );
+              }
+
+              final users = snapshot.data!.docs;
+
+              return ListView(
+                children: [
+                  DataTable(
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          'Name',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        ),
                       ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Department',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      DataColumn(
+                        label: Text(
+                          'Department',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        ),
                       ),
-                    ),
-                  ],
-                  rows: [
-                    DataRow(cells: [
-                      DataCell(
-                          Text('Mira musrini', style: GoogleFonts.poppins())),
-                      DataCell(Text('Kaprodi', style: GoogleFonts.poppins())),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text('FTI', style: GoogleFonts.poppins())),
-                      DataCell(Text('Fakultas', style: GoogleFonts.poppins())),
-                    ]),
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                    rows: users.map((userDoc) {
+                      final userData = userDoc.data() as Map<String, dynamic>;
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(
+                            userData['name'] ?? 'N/A',
+                            style: GoogleFonts.poppins(),
+                          )),
+                          DataCell(Text(
+                            userData['department'] ?? 'N/A',
+                            style: GoogleFonts.poppins(),
+                          )),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            },
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 
   void _showAddCategoryDialog() {
     final TextEditingController _newCategoryController =

@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: StudentDashboard(),
+      home: LoginPage(),
       routes: {
         'login': (context) => LoginPage(),
         'admin_dashboard': (context) => AdminDashboard(),

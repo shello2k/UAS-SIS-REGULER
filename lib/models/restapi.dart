@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class DataService {
@@ -52,23 +54,30 @@ class DataService {
       }
    }
 
-   Future selectId(String token, String project, String collection, String appid, String id) async {
-      String uri = 'https://io.etter.cloud/v4/select_id/token/' + token + '/project/' + project + '/collection/' + collection + '/appid/' + appid + '/id/' + id;
+  Future selectId(String token, String project, String collection, String appid, String id) async {  
+  String uri = 'https://io.etter.cloud/v4/select_id/token/' + token + '/project/' + project + '/collection/' + collection + '/appid/' + appid + '/id/' + id;  
+  
+  try {  
+    final response = await http.get(Uri.parse(uri));  
+  
+    if (response.statusCode == 200) {  
+      // Parse the response body  
+      final List<dynamic> data = json.decode(response.body);  
+      if (data.isNotEmpty) {  
+        return data[0]; // Return the first element if it's an array  
+      } else {  
+        return {}; // Return an empty map if the array is empty  
+      }  
+    } else {  
+      // Return an empty map  
+      return {};  
+    }  
+  } catch (e) {  
+    // Print error here  
+    return {};  
+  }  
+}  
 
-      try {
-         final response = await http.get(Uri.parse(uri));
-
-         if (response.statusCode == 200) {
-            return response.body;
-         } else {
-            // Return an empty array
-            return '[]';
-         }
-      } catch (e) {
-         // Print error here
-         return '[]';
-      }
-   }
 
    Future selectWhere(String token, String project, String collection, String appid, String where_field, String where_value) async {
       String uri = 'https://io.etter.cloud/v4/select_where/token/' + token + '/project/' + project + '/collection/' + collection + '/appid/' + appid + '/where_field/' + where_field + '/where_value/' + where_value;

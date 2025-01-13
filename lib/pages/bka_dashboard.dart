@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
+import 'profile_page.dart'; // Import your ProfilePage
 
-class HeadDashboard extends StatefulWidget {
+class BkaDashboard extends StatefulWidget {
   @override
-  _HeadDashboardState createState() => _HeadDashboardState();
+  _BkaDashboardState createState() => _BkaDashboardState();
 }
 
-class _HeadDashboardState extends State<HeadDashboard> {
+class _BkaDashboardState extends State<BkaDashboard> {
   int _selectedIndex = 0;
   String _searchQuery = '';
   String _selectedCategory = 'All';
@@ -49,13 +50,23 @@ class _HeadDashboardState extends State<HeadDashboard> {
       'category': 'Permohonan',
       'proposer': 'Himpunana Sistem Informasi'
     },
-    // Ini masih static datanya
+    // Add more data as needed
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navigate to ProfilePage when the second item is tapped
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                ProfilePage(isStudent: true)), // Pass any required parameters
+      );
+    }
   }
 
   void _navigateToDetailMail(BuildContext context) {
@@ -68,7 +79,6 @@ class _HeadDashboardState extends State<HeadDashboard> {
   }
 
   List<Map<String, String>> _getFilteredCards() {
-    //logic nampilin data di card
     return _cards.where((card) {
       final matchesSearch =
           card['title']!.toLowerCase().contains(_searchQuery.toLowerCase());
@@ -79,7 +89,6 @@ class _HeadDashboardState extends State<HeadDashboard> {
   }
 
   void _selectCategory(String category) {
-    //ni logic select category
     setState(() {
       _selectedCategory = category;
     });
@@ -95,7 +104,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
           child: AppBar(
             backgroundColor: Colors.orange,
             title: Text(
-              'Head Dashboard',
+              'BKA Dashboard',
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             centerTitle: true,
@@ -111,8 +120,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage(
-                      'assets/head_profile.png'), // masih static gambarnya
+                  backgroundImage: AssetImage('assets/fti_profile.jpg'),
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -120,7 +128,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Mira Musrini Barmawi, S.Si., M.T.', // masih static namanya
+                        'Badan Kegiatan Akademik (BKA)',
                         style: GoogleFonts.poppins(
                             fontSize: 16, color: Colors.black),
                       ),
@@ -128,7 +136,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
                         icon:
                             FaIcon(FontAwesomeIcons.bell, color: Colors.orange),
                         onPressed: () {
-                          //masuk ke page notification
+                          // Action for notification
                         },
                       ),
                     ],
@@ -252,15 +260,14 @@ class _HeadDashboardState extends State<HeadDashboard> {
             ),
           ],
         ),
-        // masih blm ada logic buat route nya
         child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: FaIcon(Icons.home, color: Colors.orange),
+              icon: Icon(Icons.home, color: Colors.orange),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: FaIcon(Icons.person, color: Colors.orange),
+              icon: Icon(Icons.person, color: Colors.orange),
               label: 'Profile',
             ),
           ],

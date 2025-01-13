@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-/*
-import 'package:provider/provider.dart';
-import 'package:flutter_application_1/app_state.dart';
-import 'package:flutter_application_1/models/proposal.dart';
-import 'package:flutter_application_1/widgets/bottom_navbar.dart'; // masih statis
-*/
+import 'package:flutter_application_1/pages/edit_of_request.dart';
+import 'package:flutter_application_1/pages/new_request.dart';
+import 'package:flutter_application_1/models/restapi.dart';
+import 'package:flutter_application_1/models/model_surat.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:flutter_application_1/pages/profile_page.dart'; // Import ProfilePage
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import FontAwesome for icons
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 
 class StudentDashboard extends StatefulWidget {
   @override
@@ -14,6 +17,87 @@ class StudentDashboard extends StatefulWidget {
 
 class _StudentDashboardState extends State<StudentDashboard> {
   int _selectedIndex = 0;
+  List<SuratModel> proposals = [];
+  String _searchQuery = '';
+  String _selectedCategory = 'All';
+
+  final String token = '6717db9aec5074ec8261d698';
+  final String project = 'uas-sis';
+  final String collection = 'surat';
+  final String appid = '677eb6dae9cc622b8bd171ea';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProposals(); // declare buat ngambil proposal
+  }
+
+  // sort proposal by date
+  void _sortProposalsByDate() {
+    setState(() {
+      proposals.sort((a, b) {
+        DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.tanggal_pengajuan);
+        DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.tanggal_pengajuan);
+        return dateA.compareTo(dateB);
+      });
+    });
+  }
+
+  // ngambil proposal
+  Future<void> _fetchProposals() async {
+    try {
+      final response =
+          await DataService().selectAll(token, project, collection, appid);
+      final List<dynamic> data = json.decode(response);
+      setState(() {
+        proposals = data.map((item) => SuratModel.fromJson(item)).toList();
+      });
+    } catch (e) {
+      print('Error fetching proposals: $e');
+    }
+  }
+
+  Future<void> _createProposal(SuratModel proposal) async {
+    try {
+      await DataService().insertSurat(
+        appid,
+        proposal.penerima,
+        proposal.judul_proposal,
+        proposal.kategory_proposal,
+        proposal.deskripsi_proposal,
+        proposal.tanggal_pengajuan,
+        proposal.status_surat,
+        proposal.kode_proposal,
+        proposal.feedback_proposal ?? '',
+      );
+
+      // refresh list proposal
+      await _fetchProposals();
+    } catch (e) {
+      print('Error creating proposal: $e');
+    }
+  }
+
+  Future<void> _updateProposal(String id, SuratModel proposal) async {
+    try {
+      await DataService().updateId('judul_proposal', proposal.judul_proposal,
+          token, project, collection, appid, id);
+      await DataService().updateId('desc_proposal', proposal.deskripsi_proposal,
+          token, project, collection, appid, id);
+      _fetchProposals(); // refresh list setelah edit proposal
+    } catch (e) {
+      print('Error updating proposal: $e');
+    }
+  }
+
+  Future<void> _deleteProposal(String id) async {
+    try {
+      await DataService().removeId(token, project, collection, appid, id);
+      _fetchProposals(); // refresh list beres delete
+    } catch (e) {
+      print('Error deleting proposal: $e');
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -21,39 +105,118 @@ class _StudentDashboardState extends State<StudentDashboard> {
     });
 
     if (index == 1) {
-      // TODO: LOGIC BACKEND UNTUK NAVIGASI PROFILE PAGE
-      Navigator.pushNamed(context, '/profile'); // Navigasi ke halaman Profile
-    } else if (index == 2) {
-      // TODO: LOGIC BACKEND UNTUK NAVIGASI AJUKAN PROPOSAL PAGE
-      Navigator.pushNamed(
-          context, '/ajukan-proposal'); // Navigasi ke halaman Ajukan Proposal
+      // Navigasi ke ProfilePage
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ProfilePage(isStudent: true), // Kirim parameter isStudent
+        ),
+      );
     }
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Hapus'),
+          content:
+              const Text('Apakah Anda yakin ingin menghapus proposal ini?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteProposal(id);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<SuratModel> _getFilteredProposals() {
+    return proposals.where((proposal) {
+      final matchesSearch = proposal.judul_proposal
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
+      final matchesCategory = _selectedCategory == 'All' ||
+          proposal.kategory_proposal == _selectedCategory;
+      return matchesSearch && matchesCategory;
+    }).toList();
+  }
+
+  void _selectCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Dashboard Mahasiswa',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.orange,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, 'login');
-            },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0), // Reduced height
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.orange,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
           ),
-        ],
+          child: AppBar(
+            title: const Text(
+              'Dashboard Mahasiswa',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false, // Menghilangkan back button
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Profile Header
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(
+                      'assets/logo-himsi.jpg'), // Static profile image
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Himpunan Sistem Informasi', // Static name
+                        style: GoogleFonts.poppins(
+                            fontSize: 16, color: Colors.black),
+                      ),
+                      IconButton(
+                        icon:
+                            FaIcon(FontAwesomeIcons.bell, color: Colors.orange),
+                        onPressed: () {
+                          // TODO: Navigate to notification page
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,36 +228,58 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        // Logika untuk ikon pencarian
-                      },
-                      icon: const Icon(Icons.search),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Search and Sort Row
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
                     ),
-                    IconButton(
-                      onPressed: () {
-                        // Logika untuk ikon sortir
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
                       },
-                      icon: const Icon(Icons.sort),
+                      decoration: InputDecoration(
+                        hintText: 'Search by title',
+                        border: InputBorder.none,
+                        prefixIcon: Icon(Icons.search, color: Colors.orange),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      ),
                     ),
-                  ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.sort, color: Colors.orange),
+                  onSelected: _selectCategory,
+                  itemBuilder: (BuildContext context) {
+                    return <String>['All', 'Peminjaman', 'Permohonan']
+                        .map<PopupMenuItem<String>>((String value) {
+                      return PopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList();
+                  },
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView(
-                children: [
-                  _buildProposalCard(context, 'Held'),
-                  const SizedBox(height: 10),
-                  _buildProposalCard(context, 'Submitted'),
-                  const SizedBox(height: 10),
-                  _buildProposalCard(context, 'Cancel'),
-                  const SizedBox(height: 10),
-                  _buildProposalCard(context, 'Approved'),
-                ],
+              child: ListView.builder(
+                itemCount: _getFilteredProposals().length,
+                itemBuilder: (context, index) {
+                  return _buildProposalCard(
+                      context, _getFilteredProposals()[index]);
+                },
               ),
             ),
           ],
@@ -103,31 +288,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home, size: 30), // Increased icon size
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.orange.withOpacity(0.4),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.add, color: Colors.white),
-            ),
-            label: 'Ajukan Proposal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person, size: 30), // Increased icon size
             label: 'Profile',
           ),
         ],
@@ -135,12 +300,29 @@ class _StudentDashboardState extends State<StudentDashboard> {
         selectedItemColor: Colors.orange,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewRequest()),
+          ).then((newProposal) {
+            if (newProposal != null) {
+              setState(() {
+                proposals.add(newProposal);
+              });
+            }
+          });
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.orange,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  Widget _buildProposalCard(BuildContext context, String status) {
+  Widget _buildProposalCard(BuildContext context, SuratModel proposal) {
     Color statusColor;
-    switch (status) {
+    switch (proposal.status_surat) {
       case 'Submitted':
         statusColor = Colors.blue;
         break;
@@ -167,9 +349,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'P0001',
-                  style: TextStyle(
+                Text(
+                  proposal.kode_proposal,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -182,7 +364,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    status,
+                    proposal.status_surat,
                     style: TextStyle(
                       color: statusColor,
                       fontWeight: FontWeight.bold,
@@ -199,9 +381,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 color: Colors.grey,
               ),
             ),
-            const Text(
-              'KEGIATAN PENGABDIAN MASYARAKAT DI DESA BINAAN',
-              style: TextStyle(
+            Text(
+              proposal.judul_proposal,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -223,18 +405,19 @@ class _StudentDashboardState extends State<StudentDashboard> {
             const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
-                  '01/01/2024 - 10:00 AM',
-                  style: TextStyle(fontSize: 14),
+                  proposal.tanggal_pengajuan,
+                  style: const TextStyle(fontSize: 14),
                 ),
+                // Assuming you have a deadline property in your model
                 Text(
-                  '05/01/2024 - 10:00 AM',
-                  style: TextStyle(fontSize: 14),
+                  '05/01/2024 - 10:00 AM', // Replace with actual deadline if available
+                  style: const TextStyle(fontSize: 14),
                 ),
               ],
             ),
-            if (status == 'Cancel') ...[
+            if (proposal.status_surat == 'Cancel') ...[
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -247,8 +430,23 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      // TODO: LOGIC BACKEND UNTUK EDIT DAN RESEND
-                      Navigator.pushNamed(context, '/edit-proposal');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditOfList(
+                            title: proposal.judul_proposal,
+                            description: proposal.deskripsi_proposal,
+                            requestDate: proposal.tanggal_pengajuan,
+                            deadline:
+                                '05/01/2024 - 10:00 AM', // Replace with actual deadline if available
+                          ),
+                        ),
+                      ).then((updatedProposal) {
+                        if (updatedProposal != null) {
+                          _updateProposal(
+                              proposal.id, updatedProposal); // Update proposal
+                        }
+                      });
                     },
                     child: const Text(
                       'Edit and Resend',
@@ -263,7 +461,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       ),
                     ),
                     onPressed: () {
-                      _showDeleteDialog(context);
+                      _showDeleteConfirmationDialog(
+                          context, proposal.id); // Show confirmation dialog
                     },
                     child: const Text(
                       'Delete',

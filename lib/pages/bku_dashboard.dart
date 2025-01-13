@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
 
-class HeadDashboard extends StatefulWidget {
+class BkuDashboard extends StatefulWidget {
   @override
-  _HeadDashboardState createState() => _HeadDashboardState();
+  _BkuDashboardState createState() => _BkuDashboardState();
 }
 
-class _HeadDashboardState extends State<HeadDashboard> {
+class _BkuDashboardState extends State<BkuDashboard> {
   int _selectedIndex = 0;
   String _searchQuery = '';
   String _selectedCategory = 'All';
@@ -49,7 +49,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
       'category': 'Permohonan',
       'proposer': 'Himpunana Sistem Informasi'
     },
-    // Ini masih static datanya
+    // Add more data as needed
   ];
 
   void _onItemTapped(int index) {
@@ -68,7 +68,6 @@ class _HeadDashboardState extends State<HeadDashboard> {
   }
 
   List<Map<String, String>> _getFilteredCards() {
-    //logic nampilin data di card
     return _cards.where((card) {
       final matchesSearch =
           card['title']!.toLowerCase().contains(_searchQuery.toLowerCase());
@@ -79,7 +78,6 @@ class _HeadDashboardState extends State<HeadDashboard> {
   }
 
   void _selectCategory(String category) {
-    //ni logic select category
     setState(() {
       _selectedCategory = category;
     });
@@ -95,7 +93,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
           child: AppBar(
             backgroundColor: Colors.orange,
             title: Text(
-              'Head Dashboard',
+              'BKU Dashboard',
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             centerTitle: true,
@@ -111,8 +109,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage(
-                      'assets/head_profile.png'), // masih static gambarnya
+                  backgroundImage: AssetImage('assets/fti_profile.jpg'),
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -120,7 +117,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Mira Musrini Barmawi, S.Si., M.T.', // masih static namanya
+                        'Badan Kegiatan Usaha (BKU)',
                         style: GoogleFonts.poppins(
                             fontSize: 16, color: Colors.black),
                       ),
@@ -128,7 +125,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
                         icon:
                             FaIcon(FontAwesomeIcons.bell, color: Colors.orange),
                         onPressed: () {
-                          //masuk ke page notification
+                          // Action for notification
                         },
                       ),
                     ],
@@ -252,7 +249,6 @@ class _HeadDashboardState extends State<HeadDashboard> {
             ),
           ],
         ),
-        // masih blm ada logic buat route nya
         child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(

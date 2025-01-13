@@ -37,14 +37,14 @@ class _LoginPageState extends State<LoginPage> {
             if (userSnapshot.docs.isNotEmpty) {
               DocumentSnapshot userDoc = userSnapshot.docs[0];
 
-              if (userDoc.data() != null && userDoc['role'] != null) {
-                String role = userDoc['role'];
+              if (userDoc.data() != null && userDoc['department'] != null) {
+                String department = userDoc['department'];
 
-                if (role == 'student') {
+                if (department == 'Students Association') {
                   Navigator.pushReplacementNamed(context, 'student_dashboard');
-                } else if (role == 'kaprodi') {
+                } else if (department == 'Head of Study Program') {
                   Navigator.pushReplacementNamed(context, 'head_dashboard');
-                } else if (role == 'fakultas') {
+                } else if (department == 'Faculty') {
                   Navigator.pushReplacementNamed(context, 'faculty_dashboard');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

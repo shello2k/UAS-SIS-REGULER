@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -46,6 +47,10 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.pushReplacementNamed(context, 'head_dashboard');
                 } else if (department == 'Faculty') {
                   Navigator.pushReplacementNamed(context, 'faculty_dashboard');
+                } else if (department == 'BKU') {
+                  Navigator.pushReplacementNamed(context, 'bku_dashboard');
+                } else if (department == 'BKA') {
+                  Navigator.pushReplacementNamed(context, 'bka_dashboard');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Unknown role')),
@@ -160,7 +165,6 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
                           SizedBox(height: 16),
-                          // Password Input
                           TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Password',
@@ -190,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {
-                                // Logika forgot password
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => ForgotPasswordPage()));
                               },
                               child: Text(
                                 'Forgot Password?',

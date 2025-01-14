@@ -173,11 +173,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 child: Text('Faculty'),
                 value: 'Faculty',
               ),
+              DropdownMenuItem(
+                child: Text('BKU'),
+                value: 'BKU',
+              ),
+              DropdownMenuItem(
+                child: Text('BKA'),
+                value: 'BKA',
+              ),
             ],
             onChanged: (value) {
               setState(() {
                 _selectedDepartment = value as String?;
-                print('Selected Department: $_selectedDepartment'); // Debugging
               });
             },
           ),
@@ -202,11 +209,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 value: 'FTSP',
               ),
             ],
-            onChanged: (value) {
-              setState(() {
-                _selectedFaculty = value as String?;
-              });
-            },
+            onChanged:
+                _selectedDepartment != 'BKU' && _selectedDepartment != 'BKA'
+                    ? (value) {
+                        setState(() {
+                          _selectedFaculty = value as String?;
+                        });
+                      }
+                    : null,
+            value: _selectedDepartment != 'BKU' && _selectedDepartment != 'BKA'
+                ? _selectedFaculty
+                : null, 
           ),
           SizedBox(height: 16),
           TextField(
@@ -216,7 +229,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
               prefixIcon: Icon(FontAwesomeIcons.book),
               border: OutlineInputBorder(),
             ),
-            enabled: _selectedDepartment != 'Faculty',
+            enabled: _selectedDepartment != 'Faculty' &&
+                _selectedDepartment != 'BKU' &&
+                _selectedDepartment != 'BKA',
           ),
           SizedBox(height: 16),
           TextField(
@@ -269,9 +284,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   _programStudyController.clear();
                   _emailController.clear();
                   _passwordController.clear();
-                  _selectedDepartment =
-                      'Students Association';
-                  _selectedFaculty = 'FTI'; 
+                  _selectedDepartment = 'Students Association';
+                  _selectedFaculty = 'FTI';
                 });
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(

@@ -13,6 +13,9 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   int _currentIndex = 0;
 
+  String? _selectedDepartment = 'Students Association';
+  String? _selectedFaculty = 'FTI';
+
   List<String> _categories = ['Kategori 1', 'Kategori 2'];
 
   // Controllers for text fields
@@ -128,9 +131,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
-    String? _selectedDepartment = 'Students Association';
-    String? _selectedFaculty = 'FTI';
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -154,6 +154,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           SizedBox(height: 16),
           DropdownButtonFormField(
+            value: _selectedDepartment,
             decoration: InputDecoration(
               labelText: 'Department',
               prefixIcon: Icon(FontAwesomeIcons.building),
@@ -171,6 +172,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
               DropdownMenuItem(
                 child: Text('Faculty'),
                 value: 'Faculty',
+              ),
+              DropdownMenuItem(
+                child: Text('BKU'),
+                value: 'BKU',
+              ),
+              DropdownMenuItem(
+                child: Text('BKA'),
+                value: 'BKA',
               ),
             ],
             onChanged: (value) {
@@ -200,11 +209,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 value: 'FTSP',
               ),
             ],
-            onChanged: (value) {
-              setState(() {
-                _selectedFaculty = value as String?;
-              });
-            },
+            onChanged:
+                _selectedDepartment != 'BKU' && _selectedDepartment != 'BKA'
+                    ? (value) {
+                        setState(() {
+                          _selectedFaculty = value as String?;
+                        });
+                      }
+                    : null,
+            value: _selectedDepartment != 'BKU' && _selectedDepartment != 'BKA'
+                ? _selectedFaculty
+                : null, 
           ),
           SizedBox(height: 16),
           TextField(
@@ -214,6 +229,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
               prefixIcon: Icon(FontAwesomeIcons.book),
               border: OutlineInputBorder(),
             ),
+            enabled: _selectedDepartment != 'Faculty' &&
+                _selectedDepartment != 'BKU' &&
+                _selectedDepartment != 'BKA',
           ),
           SizedBox(height: 16),
           TextField(
@@ -259,6 +277,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Account Created Successfully!')),
                 );
+
+                setState(() {
+                  _nameController.clear();
+                  _nimController.clear();
+                  _programStudyController.clear();
+                  _emailController.clear();
+                  _passwordController.clear();
+                  _selectedDepartment = 'Students Association';
+                  _selectedFaculty = 'FTI';
+                });
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to Create Account: $e')),

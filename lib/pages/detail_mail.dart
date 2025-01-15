@@ -168,7 +168,10 @@ class _DetailMailState extends State<DetailMail> {
                                 type: ArtSweetAlertType.success,
                                 title: "Rejected!",
                               ),
-                            );
+                            ).then((_) {
+                              Navigator.pop(context,
+                                  true); // Kembali ke Student Dashboard
+                            });
                           }
                         },
                         icon: FaIcon(FontAwesomeIcons.timesCircle,
@@ -206,7 +209,10 @@ class _DetailMailState extends State<DetailMail> {
                                 type: ArtSweetAlertType.success,
                                 title: "Approved!",
                               ),
-                            );
+                            ).then((_) {
+                              Navigator.pop(context,
+                                  true); // Kembali ke Student Dashboard
+                            });
                           }
                         },
                         icon: FaIcon(FontAwesomeIcons.checkCircle,

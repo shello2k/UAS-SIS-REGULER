@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';  
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';  
 import 'detail_mail.dart';  
-import 'profile_page.dart'; // Import your ProfilePage  
-import 'package:flutter_application_1/models/restapi.dart'; // Import your DataService  
-import 'package:flutter_application_1/models/model_surat.dart'; // Import your SuratModel  
-import 'dart:convert'; // For jsonDecode  
+import 'profile_page.dart'; 
+import 'package:flutter_application_1/models/restapi.dart';  
+import 'package:flutter_application_1/models/model_surat.dart'; 
+import 'dart:convert'; 
   
 class FacultyDashboard extends StatefulWidget {  
   @override  
@@ -27,12 +27,12 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
   @override  
   void initState() {  
     super.initState();  
-    _fetchSuratList(); // Fetch surat data when the dashboard is initialized  
+    _fetchSuratList(); 
   }  
   
   Future<void> _fetchSuratList() async {  
     setState(() {  
-      _isLoading = true; // Set loading state  
+      _isLoading = true; 
     });  
   
     try {  
@@ -40,12 +40,12 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
       final List<dynamic> data = json.decode(response);  
       setState(() {  
         _suratList = data.map((item) => SuratModel.fromJson(item)).toList(); // Map the response to SuratModel  
-        _isLoading = false; // Set loading state to false  
+        _isLoading = false;
       });  
     } catch (e) {  
       print('Error fetching surat list: $e');  
       setState(() {  
-        _isLoading = false; // Set loading state to false  
+        _isLoading = false;   
       });  
     }  
   }  
@@ -71,7 +71,11 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
       MaterialPageRoute(  
         builder: (context) => DetailMail(kode_proposal: kode_proposal), // Pass suratId to DetailMail  
       ),  
-    );  
+    ).then((isUpdated) {
+      if (isUpdated == true) {
+        _fetchSuratList(); // Refresh list of proposals after successful edit
+      }
+    });  
   }  
   
   List<SuratModel> _getFilteredSurat() {  

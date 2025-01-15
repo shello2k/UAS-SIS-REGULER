@@ -42,8 +42,8 @@ class _DetailMailState extends State<DetailMail> {
       if (response.isNotEmpty) {
         final data = response; // Use the response directly
         setState(() {
-          surat = SuratModel.fromJson(data); // Map the response to SuratModel
-          _isLoading = false; // Set loading state to false
+          surat = SuratModel.fromJson(data);
+          _isLoading = false;
         });
       } else {
         // Handle the case where no data is returned
@@ -56,6 +56,46 @@ class _DetailMailState extends State<DetailMail> {
       setState(() {
         _isLoading = false; // Set loading state to false
       });
+    }
+  }
+
+  // Future<void> _updateSuratStatus(String status, {String? feedback}) async {
+  //   try {
+  //     final Map<String, dynamic> updates = {
+  //       'status_surat': status,
+  //     };
+  //     if (feedback != null) {
+  //       updates['feedback_surat'] =
+  //           feedback; // Tambahkan kolom feedback jika ada
+  //     }
+
+  //     await DataService().updateId(
+  //       'status_surat', // Field to update
+  //       status,
+  //       '6717db9aec5074ec8261d698', // Token
+  //       'uas-sis', // Project
+  //       'surat', // Collection
+  //       '677eb6dae9cc622b8bd171ea', // App ID
+  //       widget.kode_proposal, // Surat ID
+  //     );
+  //   } catch (e) {
+  //     print('Error updating surat status: $e');
+  //   }
+  // }
+
+  Future<void> _updateFeedback(String feedback) async {
+    try {
+      await DataService().updateId(
+        'feedback_proposal', // Field to update
+        feedback, // Feedback content
+        '6717db9aec5074ec8261d698', // Token
+        'uas-sis', // Project
+        'surat', // Collection
+        '677eb6dae9cc622b8bd171ea', // App ID
+        widget.kode_proposal, // Surat ID
+      ); // Update feedback
+    } catch (e) {
+      print('Error updating feedback: $e');
     }
   }
 
@@ -74,6 +114,71 @@ class _DetailMailState extends State<DetailMail> {
       print('Error updating surat status: $e');
     }
   }
+
+  // Future<void> _showFeedbackDialog() async {
+  //   final TextEditingController feedbackController = TextEditingController();
+
+  //   await showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Text(
+  //           'Provide Feedback',
+  //           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+  //         ),
+  //         content: TextField(
+  //           controller: feedbackController,
+  //           maxLines: 4,
+  //           decoration: InputDecoration(
+  //             hintText: 'Enter your feedback here...',
+  //             border: OutlineInputBorder(),
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child:
+  //                 Text('Cancel', style: GoogleFonts.poppins(color: Colors.red)),
+  //             onPressed: () {
+  //               Navigator.pop(context); // Close the dialog
+  //             },
+  //           ),
+  //           ElevatedButton(
+  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+  //             child: Text('Submit',
+  //                 style: GoogleFonts.poppins(color: Colors.white)),
+  //             onPressed: () async {
+  //               final feedback = feedbackController.text.trim();
+  //               if (feedback.isNotEmpty) {
+  //                 await _updateSuratStatus("Rejected", feedback: feedback);
+  //                 Navigator.pop(context); // Close the dialog
+  //                 ArtSweetAlert.show(
+  //                   context: context,
+  //                   artDialogArgs: ArtDialogArgs(
+  //                     type: ArtSweetAlertType.success,
+  //                     title: "Rejected!",
+  //                     text: "Feedback submitted successfully.",
+  //                   ),
+  //                 ).then((_) {
+  //                   Navigator.pop(context, true); // Return to the dashboard
+  //                 });
+  //               } else {
+  //                 // Show an error if feedback is empty
+  //                 ArtSweetAlert.show(
+  //                   context: context,
+  //                   artDialogArgs: ArtDialogArgs(
+  //                     type: ArtSweetAlertType.danger,
+  //                     title: "Error",
+  //                     text: "Feedback cannot be empty!",
+  //                   ),
+  //                 );
+  //               }
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -143,36 +248,87 @@ class _DetailMailState extends State<DetailMail> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () async {
-                          ArtDialogResponse response = await ArtSweetAlert.show(
-                            barrierDismissible: false,
+                          final TextEditingController feedbackController =
+                              TextEditingController();
+
+                          // Tampilkan dialog untuk input feedback
+                          await showDialog(
                             context: context,
-                            artDialogArgs: ArtDialogArgs(
-                              denyButtonText: "Cancel",
-                              title: "Are you sure?",
-                              text: "You won't be able to revert this!",
-                              confirmButtonText: "Yes, reject it",
-                              type: ArtSweetAlertType.warning,
-                            ),
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Provide Feedback',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                content: TextField(
+                                  controller: feedbackController,
+                                  maxLines: 4,
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter your feedback here...',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel',
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.red)),
+                                    onPressed: () {
+                                      Navigator.pop(context); // Tutup dialog
+                                    },
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green),
+                                    child: Text('Submit',
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white)),
+                                    onPressed: () async {
+                                      final feedback =
+                                          feedbackController.text.trim();
+                                      if (feedback.isNotEmpty) {
+                                        // Navigator.pop(context); // Tutup dialog
+
+                                        // Update feedback terlebih dahulu
+                                        await _updateFeedback(feedback);
+
+                                        // Setelah feedback berhasil diupdate, update status surat
+                                        await _updateSuratStatus("Rejected");
+
+                                        // Tampilkan notifikasi sukses
+                                        await ArtSweetAlert.show(
+                                          context: context,
+                                          artDialogArgs: ArtDialogArgs(
+                                            type: ArtSweetAlertType.success,
+                                            title: "Rejected!",
+                                            text:
+                                                "Feedback and status updated successfully.",
+                                          ),
+                                        ).then((_) {
+                                          Navigator.pop(context,
+                                              true); // Kembali ke dashboard
+                                        }).then((_) {
+                                          Navigator.pop(context,
+                                              true); // Kembali ke dashboard
+                                        });
+                                      } else {
+                                        // Feedback tidak boleh kosong
+                                        ArtSweetAlert.show(
+                                          context: context,
+                                          artDialogArgs: ArtDialogArgs(
+                                            type: ArtSweetAlertType.danger,
+                                            title: "Error",
+                                            text: "Feedback cannot be empty!",
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
                           );
-
-                          if (response == null) {
-                            return;
-                          }
-
-                          if (response.isTapConfirmButton) {
-                            await _updateSuratStatus(
-                                "Rejected"); // Update status to "Rejected"
-                            ArtSweetAlert.show(
-                              context: context,
-                              artDialogArgs: ArtDialogArgs(
-                                type: ArtSweetAlertType.success,
-                                title: "Rejected!",
-                              ),
-                            ).then((_) {
-                              Navigator.pop(context,
-                                  true); // Kembali ke Student Dashboard
-                            });
-                          }
                         },
                         icon: FaIcon(FontAwesomeIcons.timesCircle,
                             color: Colors.white),

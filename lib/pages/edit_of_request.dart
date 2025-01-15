@@ -17,7 +17,7 @@ class EditOfList extends StatefulWidget {
 class _EditOfListState extends State<EditOfList> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _descriptionController;
-
+  
   @override
   void initState() {
     super.initState();
@@ -31,33 +31,18 @@ class _EditOfListState extends State<EditOfList> {
     super.dispose();
   }
 
-  // void _showSuccessAlert() {
-  //   ArtSweetAlert.show(
-  //     context: context,
-  //     artDialogArgs: ArtDialogArgs(
-  //       type: ArtSweetAlertType.success,
-  //       title: "Proposal Updated!",
-  //       text: "Your proposal has been successfully updated.",
-  //       onConfirm: () {
-  //         // Return the updated proposal and navigate back to StudentDashboard
-  //         Navigator.pop(context, widget.surat.copyWith(deskripsi_proposal: _descriptionController.text));
-  //       },
-  //     ),
-  //   );
-  // }
   void _showSuccessAlert() {
-  ArtSweetAlert.show(
-    context: context,
-    artDialogArgs: ArtDialogArgs(
-      type: ArtSweetAlertType.success,
-      title: "Proposal Submitted!",
-      text: "Your proposal has been successfully submitted.",
-    ),
-  ).then((_) {
-    Navigator.pop(context, true); // Kembali ke Student Dashboard
-  });
-}
-
+    ArtSweetAlert.show(
+      context: context,
+      artDialogArgs: ArtDialogArgs(
+        type: ArtSweetAlertType.success,
+        title: "Proposal Submitted!",
+        text: "Your proposal has been successfully submitted.",
+      ),
+    ).then((_) {
+      Navigator.pop(context, true);
+    });
+  }
 
   Future<void> _submitProposal() async {
     if (_formKey.currentState!.validate()) {
@@ -65,31 +50,40 @@ class _EditOfListState extends State<EditOfList> {
 
       // Call the API to update the proposal description
       bool descriptionUpdated = await DataService().updateId(
-        'deskripsi_proposal', // Field to update
-        updatedDescription, // New description
-        '6717db9aec5074ec8261d698', // Token
-        'uas-sis', // Project
-        'surat', // Collection
-        '677eb6dae9cc622b8bd171ea', // App ID
-        widget.surat.id, // Use the generated ID from the model
+        'deskripsi_proposal',
+        updatedDescription,
+        '6717db9aec5074ec8261d698',
+        'uas-sis',
+        'surat',
+        '677eb6dae9cc622b8bd171ea',
+        widget.surat.id,
+      );
+
+      // Call the API to update the feedback to an empty string
+      bool feedbackCleared = await DataService().updateId(
+        'feedback_proposal',
+        '',
+        '6717db9aec5074ec8261d698',
+        'uas-sis',
+        'surat',
+        '677eb6dae9cc622b8bd171ea',
+        widget.surat.id,
       );
 
       // Call the API to update the status to submitted
       bool statusUpdated = await DataService().updateId(
-        'status_surat', // Field to update
-        'Submitted', // New status
-        '6717db9aec5074ec8261d698', // Token
-        'uas-sis', // Project
-        'surat', // Collection
-        '677eb6dae9cc622b8bd171ea', // App ID
-        widget.surat.id, // Use the generated ID from the model
+        'status_surat',
+        'Submitted',
+        '6717db9aec5074ec8261d698',
+        'uas-sis',
+        'surat',
+        '677eb6dae9cc622b8bd171ea',
+        widget.surat.id,
       );
 
-      if (descriptionUpdated && statusUpdated) {
+      if (descriptionUpdated && feedbackCleared && statusUpdated) {
         _showSuccessAlert();
-         // Show success alert if both updates were successful
       } else {
-        // Handle the error case
         ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
@@ -101,7 +95,6 @@ class _EditOfListState extends State<EditOfList> {
         );
       }
     } else {
-      // Show alert dialog using ArtSweetAlert if validation fails
       ArtSweetAlert.show(
         context: context,
         artDialogArgs: ArtDialogArgs(
@@ -147,7 +140,7 @@ class _EditOfListState extends State<EditOfList> {
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Edit your description here...',
                 ),
@@ -160,9 +153,23 @@ class _EditOfListState extends State<EditOfList> {
                 style: GoogleFonts.poppins(),
               ),
               const SizedBox(height: 16),
+              Text(
+                'Feedback',
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+              ),
+              Text(
+                widget.surat.feedback_proposal.isNotEmpty
+                    ? widget.surat.feedback_proposal
+                    : 'No feedback provided.',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
-                  onPressed: _submitProposal, // Call the submit function
+                  onPressed: _submitProposal,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,

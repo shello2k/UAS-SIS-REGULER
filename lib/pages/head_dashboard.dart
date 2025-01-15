@@ -75,11 +75,12 @@ class _HeadDashboardState extends State<HeadDashboard> {
       final matchesCategory = _selectedCategory == 'All' ||
           surat.kategory_proposal == _selectedCategory;
       final isNotRejectedOrApproved = surat.status_surat != 'Rejected' &&
-          surat.status_surat !=
-              'On Progress'; // Exclude rejected and approved surat
+          surat.status_surat != 'On Progress';
+      final isSubmitted = surat.status_surat == 'Submitted';
       return matchesSearch &&
           matchesCategory &&
-          isNotRejectedOrApproved; // Add the new condition
+          isNotRejectedOrApproved &&
+          isSubmitted;
     }).toList();
   }
 
@@ -125,7 +126,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Mira Musrini Barmawi, S.Si., M.T.', // Static name
+                        'Mira Musrini Barmawi', // Static name
                         style: GoogleFonts.poppins(
                             fontSize: 16, color: Colors.black),
                       ),
@@ -204,48 +205,56 @@ class _HeadDashboardState extends State<HeadDashboard> {
                       ? Center(
                           child:
                               CircularProgressIndicator()) // Show loading indicator
-                      : ListView.builder(
-                          padding: EdgeInsets.all(0),
-                          itemCount: _getFilteredSurat().length,
-                          itemBuilder: (context, index) {
-                            final surat = _getFilteredSurat()[index];
-                            return GestureDetector(
-                              onTap: () => _navigateToDetailMail(context,
-                                  surat.id), // Pass surat ID to DetailMail
-                              child: Card(
-                                elevation: 4,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                color: Colors.white,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        surat.judul_proposal,
-                                        style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Proposer: ${surat.penerima}', // Assuming 'penerima' holds the user ID
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.grey[600],
-                                            fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                      : _getFilteredSurat().isEmpty
+                          ? Center(
+                              child: Text(
+                                'No proposals available.',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 16, color: Colors.white),
                               ),
-                            );
-                          },
-                        ),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.all(0),
+                              itemCount: _getFilteredSurat().length,
+                              itemBuilder: (context, index) {
+                                final surat = _getFilteredSurat()[index];
+                                return GestureDetector(
+                                  onTap: () => _navigateToDetailMail(context,
+                                      surat.id), // Pass surat ID to DetailMail
+                                  child: Card(
+                                    elevation: 4,
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            surat.judul_proposal,
+                                            style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'Proposer: ${surat.penerima}', // Assuming 'penerima' holds the user ID
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey[600],
+                                                fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                 ),
               ),
             ),
@@ -284,24 +293,23 @@ class _HeadDashboardState extends State<HeadDashboard> {
     );
   }
 
-  
-  void _onItemTapped(int index) {  
-    setState(() {  
-      _selectedIndex = index; // Update the selected index  
-    });  
-  
-    // Navigate to different pages based on the selected index  
-    if (index == 0) {  
-      // Home is already on this page, do nothing or refresh if needed  
-    } else if (index == 1) {  
-      // Navigate to Profile Page  
-      Navigator.push(  
-        context,  
-        MaterialPageRoute(  
-          builder: (context) => ProfilePage(isStudent: false), // Replace with your actual ProfilePage  
-        ),  
-      );  
-    }  
-  }  
-  
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
+
+    // Navigate to different pages based on the selected index
+    if (index == 0) {
+      // Home is already on this page, do nothing or refresh if needed
+    } else if (index == 1) {
+      // Navigate to Profile Page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfilePage(
+              isStudent: false), // Replace with your actual ProfilePage
+        ),
+      );
+    }
+  }
 }

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';  
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/detail_mail_bka.dart';  
 import 'package:google_fonts/google_fonts.dart';  
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';  
 import 'detail_mail.dart';  
@@ -69,16 +70,22 @@ class _BkaDashboardState extends State<BkaDashboard> {
     Navigator.push(  
       context,  
       MaterialPageRoute(  
-        builder: (context) => DetailMail(kode_proposal: kode_proposal), // Pass suratId to DetailMail  
+        builder: (context) => DetailMailBka(kode_proposal: kode_proposal), // Pass suratId to DetailMail  
       ),  
-    );  
+    ).then((isUpdated) {
+      if (isUpdated == true) {
+        _fetchSuratList(); // Refresh list of proposals after successful edit
+      }
+    });  
   }  
   
   List<SuratModel> _getFilteredSurat() {  
     return _suratList.where((surat) {  
       final matchesSearch = surat.judul_proposal.toLowerCase().contains(_searchQuery.toLowerCase());  
       final matchesCategory = _selectedCategory == 'All' || surat.kategory_proposal == _selectedCategory;  
-      return matchesSearch && matchesCategory;  
+      final isProggres = surat.status_surat ==
+          'On Progress - BKA'; // Assuming 'status_surat' holds the status of the proposal
+      return matchesSearch && matchesCategory && isProggres;  
     }).toList();  
   }  
   

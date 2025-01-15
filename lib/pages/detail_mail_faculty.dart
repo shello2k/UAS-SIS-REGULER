@@ -6,16 +6,16 @@ import 'package:flutter_application_1/models/restapi.dart';
 import 'package:flutter_application_1/models/model_surat.dart'; 
 import 'dart:convert'; 
 
-class DetailMail extends StatefulWidget {
+class DetailMailFaculty extends StatefulWidget {
   final String kode_proposal; // Surat ID passed from the previous screen
 
-  DetailMail({required this.kode_proposal}); // Constructor to accept suratId
+  DetailMailFaculty({required this.kode_proposal}); // Constructor to accept suratId
 
   @override
   _DetailMailState createState() => _DetailMailState();
 }
 
-class _DetailMailState extends State<DetailMail> {
+class _DetailMailState extends State<DetailMailFaculty> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
 
@@ -358,7 +358,7 @@ class _DetailMailState extends State<DetailMail> {
 
                           if (response.isTapConfirmButton) {
                             await _updateSuratStatus(
-                                "On Progress - Faculty"); // Update status to "On Progress - Faculty"
+                                "On Progress - BKU"); // Update status to "On Progress - Faculty"
                             ArtSweetAlert.show(
                               context: context,
                               artDialogArgs: ArtDialogArgs(

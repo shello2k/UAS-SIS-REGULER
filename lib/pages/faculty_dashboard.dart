@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/detail_mail_faculty.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
@@ -73,7 +74,7 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailMail(
+        builder: (context) => DetailMailFaculty(
             kode_proposal: kode_proposal), // Pass suratId to DetailMail
       ),
     ).then((isUpdated) {
@@ -96,7 +97,7 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
           'On Progress - Faculty'; // Exclude rejected and approved surat
       return matchesSearch &&
           matchesCategory &&
-          isNotRejectedOrApproved; // Add the new condition
+          isNotRejectedOrApproved && isProggres; // Add the new condition
     }).toList();
   }
 

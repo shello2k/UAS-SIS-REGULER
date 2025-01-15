@@ -6,16 +6,16 @@ import 'package:flutter_application_1/models/restapi.dart';
 import 'package:flutter_application_1/models/model_surat.dart'; 
 import 'dart:convert'; 
 
-class DetailMail extends StatefulWidget {
+class DetailMailBka extends StatefulWidget {
   final String kode_proposal; // Surat ID passed from the previous screen
 
-  DetailMail({required this.kode_proposal}); // Constructor to accept suratId
+  DetailMailBka({required this.kode_proposal}); // Constructor to accept suratId
 
   @override
   _DetailMailState createState() => _DetailMailState();
 }
 
-class _DetailMailState extends State<DetailMail> {
+class _DetailMailState extends State<DetailMailBka> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
 
@@ -115,70 +115,6 @@ class _DetailMailState extends State<DetailMail> {
     }
   }
 
-  // Future<void> _showFeedbackDialog() async {
-  //   final TextEditingController feedbackController = TextEditingController();
-
-  //   await showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: Text(
-  //           'Provide Feedback',
-  //           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-  //         ),
-  //         content: TextField(
-  //           controller: feedbackController,
-  //           maxLines: 4,
-  //           decoration: InputDecoration(
-  //             hintText: 'Enter your feedback here...',
-  //             border: OutlineInputBorder(),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child:
-  //                 Text('Cancel', style: GoogleFonts.poppins(color: Colors.red)),
-  //             onPressed: () {
-  //               Navigator.pop(context); // Close the dialog
-  //             },
-  //           ),
-  //           ElevatedButton(
-  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-  //             child: Text('Submit',
-  //                 style: GoogleFonts.poppins(color: Colors.white)),
-  //             onPressed: () async {
-  //               final feedback = feedbackController.text.trim();
-  //               if (feedback.isNotEmpty) {
-  //                 await _updateSuratStatus("Rejected", feedback: feedback);
-  //                 Navigator.pop(context); // Close the dialog
-  //                 ArtSweetAlert.show(
-  //                   context: context,
-  //                   artDialogArgs: ArtDialogArgs(
-  //                     type: ArtSweetAlertType.success,
-  //                     title: "Rejected!",
-  //                     text: "Feedback submitted successfully.",
-  //                   ),
-  //                 ).then((_) {
-  //                   Navigator.pop(context, true); // Return to the dashboard
-  //                 });
-  //               } else {
-  //                 // Show an error if feedback is empty
-  //                 ArtSweetAlert.show(
-  //                   context: context,
-  //                   artDialogArgs: ArtDialogArgs(
-  //                     type: ArtSweetAlertType.danger,
-  //                     title: "Error",
-  //                     text: "Feedback cannot be empty!",
-  //                   ),
-  //                 );
-  //               }
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +230,7 @@ class _DetailMailState extends State<DetailMail> {
                                         await _updateFeedback(feedback);
 
                                         // Setelah feedback berhasil diupdate, update status surat
-                                        await _updateSuratStatus("Rejected");
+                                        await _updateSuratStatus("Rejected - bku");
 
                                         // Tampilkan notifikasi sukses
                                         await ArtSweetAlert.show(
@@ -358,7 +294,7 @@ class _DetailMailState extends State<DetailMail> {
 
                           if (response.isTapConfirmButton) {
                             await _updateSuratStatus(
-                                "On Progress - Faculty"); // Update status to "On Progress - Faculty"
+                                "Approved"); // Update status to "On Progress - Faculty"
                             ArtSweetAlert.show(
                               context: context,
                               artDialogArgs: ArtDialogArgs(

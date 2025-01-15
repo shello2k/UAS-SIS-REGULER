@@ -319,7 +319,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 Text(
-                  'Deadline',
+                  'Proggress',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
@@ -334,7 +334,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 ),
                 // Assuming you have a deadline property in your model
                 Text(
-                  '05/01/2024 - 10:00 AM', // Replace with actual deadline if available
+                  '15/01/24 07:09 rejected', // Replace with actual deadline if available
                   style: const TextStyle(fontSize: 14),
                 ),
               ],

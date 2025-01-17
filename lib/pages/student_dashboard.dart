@@ -348,7 +348,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 ),
               ],
             ),
-            if (proposal.status_surat == ('Rejected', 'Rejected - bku', 'Rejected - faculty', 'Rejected - bka')) ...[
+            if (proposal.status_surat == 'Rejected') ...[
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -3,18 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
-class ProfilePage extends StatefulWidget {
-  final bool
-      isStudent; // Parameter untuk menentukan apakah pengguna adalah mahasiswa
+class ProfilePageStaff extends StatefulWidget {
+  final String
+      role; // Parameter untuk menentukan peran pengguna (Head, Faculty, BKU, BKA)
 
-  ProfilePage(
-      {required this.isStudent}); // Constructor untuk menerima parameter
+  ProfilePageStaff(
+      {required this.role}); // Constructor untuk menerima parameter
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageStaffState createState() => _ProfilePageStaffState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageStaffState extends State<ProfilePageStaff> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isVerified = true; // Status verifikasi akun
@@ -195,23 +195,10 @@ class _ProfilePageState extends State<ProfilePage> {
           // Navigasi ke halaman yang sesuai
           if (index == 0) {
             Navigator.pushNamed(
-                context, 'student_dashboard'); // Ganti dengan route yang sesuai
+                context, 'staff_dashboard'); // Ganti dengan route yang sesuai
           }
         },
       ),
-      floatingActionButton:
-          widget.isStudent // Tampilkan FAB hanya untuk mahasiswa
-              ? FloatingActionButton(
-                  onPressed: () {
-                    // TODO: Implement logic for creating a new proposal
-                    Navigator.pushNamed(context,
-                        'new_request'); // Ganti dengan route untuk pengajuan proposal
-                  },
-                  child: const Icon(Icons.add),
-                  backgroundColor: Colors.orange,
-                )
-              : null, // Jika bukan mahasiswa, tidak ada FAB
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -5,7 +5,7 @@ import 'detail_mail.dart';
 import 'package:flutter_application_1/models/model_surat.dart'; // Import your SuratModel
 import 'package:flutter_application_1/models/restapi.dart'; // Import your DataService
 import 'dart:convert'; // For jsonDecode
-import 'package:flutter_application_1/pages/profile_page.dart'; // Import your ProfilePage
+import 'package:flutter_application_1/pages/profile_page_staff.dart'; // Import your ProfilePageStaff
 
 class HeadDashboard extends StatefulWidget {
   @override
@@ -287,7 +287,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.orange,
-          //onTap: _onItemTapped, // Call the method here
+          onTap: _onItemTapped, // Call the method here
         ),
       ),
     );
@@ -306,8 +306,8 @@ class _HeadDashboardState extends State<HeadDashboard> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProfilePage(
-              isStudent: false), // Replace with your actual ProfilePage
+          builder: (context) => ProfilePageStaff(
+              role: 'Head'), // Pass the role to ProfilePageStaff
         ),
       );
     }

@@ -6,6 +6,9 @@ import 'package:flutter_application_1/models/restapi.dart';
 import 'package:flutter_application_1/models/model_surat.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'profile_page.dart'; // Import ProfilePage
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import FontAwesomeIcons
 
 class StudentDashboard extends StatefulWidget {
   @override
@@ -100,7 +103,13 @@ class _StudentDashboardState extends State<StudentDashboard> {
     });
 
     if (index == 1) {
-      Navigator.pushNamed(context, 'profile_page');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ProfilePage(isStudent: true), // Pass any required parameters
+        ),
+      );
     }
   }
 
@@ -142,21 +151,43 @@ class _StudentDashboardState extends State<StudentDashboard> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orange,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, 'login');
-            },
-          ),
-        ],
+        // Hapus tombol logout dari AppBar
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Tambahkan tampilan profil di bagian Home
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(
+                      'assets/student_profile.png'), // Ganti dengan gambar profil mahasiswa
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Nama Mahasiswa', // Ganti dengan nama mahasiswa yang sesuai
+                        style: GoogleFonts.poppins(
+                            fontSize: 16, color: Colors.black),
+                      ),
+                      IconButton(
+                        icon:
+                            FaIcon(FontAwesomeIcons.bell, color: Colors.orange),
+                        onPressed: () {
+                          // Navigate to notification page
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

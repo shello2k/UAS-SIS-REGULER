@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: HeadDashboard(),
+      home: LoginPage(),
       routes: {
         'login': (context) => LoginPage(),
         'admin_dashboard': (context) => AdminDashboard(),
@@ -60,8 +60,7 @@ class MyApp extends StatelessWidget {
         'bka_dashboard': (context) => BkaDashboard(),
         'profile_page': (context) =>
             ProfilePage(isStudent: true), // Menambahkan parameter isStudent
-        'profile_page_staff': (context) =>
-            staff.ProfilePageStaff(role: 'Head'), // Menambahkan parameter role
+        'profile_page_staff': (context) => staff.ProfilePageStaff(role: ''), // Menambahkan parameter role
       },
     );
   }

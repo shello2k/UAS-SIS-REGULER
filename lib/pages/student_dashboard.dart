@@ -18,25 +18,69 @@ class StudentDashboard extends StatefulWidget {
 class _StudentDashboardState extends State<StudentDashboard> {
   int _selectedIndex = 0;
   List<SuratModel> proposals = [];
+  List<SuratModel> filteredSurat = [];
+  DataService dataService = DataService();
+  bool _isAscending = true;
   final String token = '6717db9aec5074ec8261d698';
   final String project = 'uas-sis';
   final String collection = 'surat';
   final String appid = '677eb6dae9cc622b8bd171ea';
+  bool _isSearching = false;
+  String _searchQuery = '';
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchProposals(); // Fetch proposals on initialization
+    _fetchProposals();
   }
 
-  // Sort proposals by date
   void _sortProposalsByDate() {
     setState(() {
       proposals.sort((a, b) {
-        DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.tanggal_pengajuan);
-        DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.tanggal_pengajuan);
-        return dateA.compareTo(dateB);
+        try {
+          if (a.tanggal_pengajuan.isEmpty || b.tanggal_pengajuan.isEmpty) {
+            return 0;
+          }
+          DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.tanggal_pengajuan);
+          DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.tanggal_pengajuan);
+          return _isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+        } catch (e) {
+          print(
+              'Invalid date format: ${a.tanggal_pengajuan} or ${b.tanggal_pengajuan}');
+          return 0;
+        }
       });
+      _isAscending = !_isAscending; // Toggle sorting direction
+    });
+  }
+
+  void _searchProposals(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredSurat =
+            proposals; // Reset ke semua proposal jika pencarian kosong
+      } else {
+        filteredSurat = proposals
+            .where((proposal) => proposal.judul_proposal
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  void _filterProposals(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredSurat = proposals;
+      } else {
+        filteredSurat = proposals
+            .where((proposal) => proposal.judul_proposal
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
@@ -48,6 +92,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
       final List<dynamic> data = json.decode(response);
       setState(() {
         proposals = data.map((item) => SuratModel.fromJson(item)).toList();
+        filteredSurat = proposals; 
       });
     } catch (e) {
       print('Error fetching proposals: $e');
@@ -91,7 +136,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   Future<void> _deleteProposal(String id) async {
     try {
       await DataService().removeId(token, project, collection, appid, id);
-      _fetchProposals(); // Refresh list after deletion
+      _fetchProposals();
     } catch (e) {
       print('Error deleting proposal: $e');
     }
@@ -106,8 +151,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              ProfilePage(isStudent: true), // Pass any required parameters
+          builder: (context) => ProfilePage(isStudent: true),
         ),
       );
     }
@@ -151,28 +195,21 @@ class _StudentDashboardState extends State<StudentDashboard> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orange,
-        // Hapus tombol logout dari AppBar
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tambahkan tampilan profil di bagian Home
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage(
-                      'assets/student_profile.png'), // Ganti dengan gambar profil mahasiswa
-                ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Nama Mahasiswa', // Ganti dengan nama mahasiswa yang sesuai
+                        'Himpunan Sistem Informasi',
                         style: GoogleFonts.poppins(
                             fontSize: 16, color: Colors.black),
                       ),
@@ -193,7 +230,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Daftar Proposal Anda',
+                  'Daftar Surat Anda',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -203,26 +240,53 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        // Search functionality can be implemented here
+                        setState(() {
+                          _isSearching = !_isSearching;
+                          if (!_isSearching) {
+                            _searchProposals(
+                                ''); // Reset search if exiting search mode
+                          }
+                        });
                       },
-                      icon: const Icon(Icons.search),
+                      icon: Icon(_isSearching ? Icons.close : Icons.search),
                     ),
                     IconButton(
                       onPressed: () {
                         _sortProposalsByDate(); // Sort proposals by date
                       },
-                      icon: const Icon(Icons.sort),
+                      icon: Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
+            if (_isSearching) ...[
+              const SizedBox(height: 10),
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Cari berdasarkan judul proposal...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onChanged: (value) {
+                  _searchProposals(value); 
+                },
+              ),
+            ],
+
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: proposals.length,
+                itemCount: filteredSurat.length,
                 itemBuilder: (context, index) {
-                  return _buildProposalCard(context, proposals[index]);
+                  return _buildProposalCard(context, filteredSurat[index]);
                 },
               ),
             ),
@@ -279,10 +343,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
       case 'On Progress - BKA':
         statusColor = Colors.purple;
         break;
-      case 'Rejected':
+      case 'Rejected - Kaprodi':
         statusColor = Colors.red;
         break;
-      case 'Rejected - Faculty':
+      case 'Rejected - Facultas':
         statusColor = Colors.red;
         break;
       case 'Rejected - bku':
@@ -379,7 +443,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 ),
               ],
             ),
-            if (proposal.status_surat == 'Rejected') ...[
+            if (proposal.status_surat == 'Rejected - Kaprodi' ||
+                proposal.status_surat == 'Rejected - bku' ||
+                proposal.status_surat == 'Rejected - Fakultas' ||
+                proposal.status_surat == 'Rejected - bka') ...[
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

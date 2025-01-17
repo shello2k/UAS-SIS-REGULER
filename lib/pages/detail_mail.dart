@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
-import 'package:flutter_application_1/models/restapi.dart'; 
-import 'package:flutter_application_1/models/model_surat.dart'; 
-import 'dart:convert'; 
+import 'package:flutter_application_1/models/restapi.dart';
+import 'package:flutter_application_1/models/model_surat.dart';
+import 'dart:convert';
 
 class DetailMail extends StatefulWidget {
   final String kode_proposal; // Surat ID passed from the previous screen
@@ -18,6 +18,7 @@ class DetailMail extends StatefulWidget {
 class _DetailMailState extends State<DetailMail> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
+  bool _isHeadOfStudyProgram = false;
 
   @override
   void initState() {
@@ -40,9 +41,10 @@ class _DetailMailState extends State<DetailMail> {
       ); // Fetch surat by ID
 
       if (response.isNotEmpty) {
-        final data = response; // Use the response directly
+        final data = response;
         setState(() {
           surat = SuratModel.fromJson(data);
+          _isHeadOfStudyProgram = surat.penerima == 'Head of Study Program';
           _isLoading = false;
         });
       } else {
@@ -58,30 +60,6 @@ class _DetailMailState extends State<DetailMail> {
       });
     }
   }
-
-  // Future<void> _updateSuratStatus(String status, {String? feedback}) async {
-  //   try {
-  //     final Map<String, dynamic> updates = {
-  //       'status_surat': status,
-  //     };
-  //     if (feedback != null) {
-  //       updates['feedback_surat'] =
-  //           feedback; // Tambahkan kolom feedback jika ada
-  //     }
-
-  //     await DataService().updateId(
-  //       'status_surat', // Field to update
-  //       status,
-  //       '6717db9aec5074ec8261d698', // Token
-  //       'uas-sis', // Project
-  //       'surat', // Collection
-  //       '677eb6dae9cc622b8bd171ea', // App ID
-  //       widget.kode_proposal, // Surat ID
-  //     );
-  //   } catch (e) {
-  //     print('Error updating surat status: $e');
-  //   }
-  // }
 
   Future<void> _updateFeedback(String feedback) async {
     try {
@@ -115,71 +93,6 @@ class _DetailMailState extends State<DetailMail> {
     }
   }
 
-  // Future<void> _showFeedbackDialog() async {
-  //   final TextEditingController feedbackController = TextEditingController();
-
-  //   await showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: Text(
-  //           'Provide Feedback',
-  //           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-  //         ),
-  //         content: TextField(
-  //           controller: feedbackController,
-  //           maxLines: 4,
-  //           decoration: InputDecoration(
-  //             hintText: 'Enter your feedback here...',
-  //             border: OutlineInputBorder(),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child:
-  //                 Text('Cancel', style: GoogleFonts.poppins(color: Colors.red)),
-  //             onPressed: () {
-  //               Navigator.pop(context); // Close the dialog
-  //             },
-  //           ),
-  //           ElevatedButton(
-  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-  //             child: Text('Submit',
-  //                 style: GoogleFonts.poppins(color: Colors.white)),
-  //             onPressed: () async {
-  //               final feedback = feedbackController.text.trim();
-  //               if (feedback.isNotEmpty) {
-  //                 await _updateSuratStatus("Rejected", feedback: feedback);
-  //                 Navigator.pop(context); // Close the dialog
-  //                 ArtSweetAlert.show(
-  //                   context: context,
-  //                   artDialogArgs: ArtDialogArgs(
-  //                     type: ArtSweetAlertType.success,
-  //                     title: "Rejected!",
-  //                     text: "Feedback submitted successfully.",
-  //                   ),
-  //                 ).then((_) {
-  //                   Navigator.pop(context, true); // Return to the dashboard
-  //                 });
-  //               } else {
-  //                 // Show an error if feedback is empty
-  //                 ArtSweetAlert.show(
-  //                   context: context,
-  //                   artDialogArgs: ArtDialogArgs(
-  //                     type: ArtSweetAlertType.danger,
-  //                     title: "Error",
-  //                     text: "Feedback cannot be empty!",
-  //                   ),
-  //                 );
-  //               }
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,24 +123,38 @@ class _DetailMailState extends State<DetailMail> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
-                  Text(
-                    surat.judul_proposal,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Center(
+                    child: Text(
+                      surat.judul_proposal,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+                  Center(
+                    child: Text(
+                      surat.kode_proposal,
+                      textAlign: TextAlign.center, // tetap center
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ),
+                  SizedBox(height: 13),
                   Text(
-                    'Category: ${surat.kategory_proposal}',
+                    'Category: ' + surat.kategory_proposal,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 5),
                   Text(
-                    'Request Date: ${surat.tanggal_pengajuan}',
+                    'Request Date: ' + surat.tanggal_pengajuan,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
@@ -294,7 +221,8 @@ class _DetailMailState extends State<DetailMail> {
                                         await _updateFeedback(feedback);
 
                                         // Setelah feedback berhasil diupdate, update status surat
-                                        await _updateSuratStatus("Rejected");
+                                        await _updateSuratStatus(
+                                            "Rejected - Kaprodi");
 
                                         // Tampilkan notifikasi sukses
                                         await ArtSweetAlert.show(
@@ -357,8 +285,11 @@ class _DetailMailState extends State<DetailMail> {
                           }
 
                           if (response.isTapConfirmButton) {
+                            String newStatus = _isHeadOfStudyProgram
+                                ? "Approved"
+                                : "On Progress - Fakultas";
                             await _updateSuratStatus(
-                                "On Progress - Faculty"); // Update status to "On Progress - Faculty"
+                                newStatus); // Update status to "On Progress - Faculty"
                             ArtSweetAlert.show(
                               context: context,
                               artDialogArgs: ArtDialogArgs(

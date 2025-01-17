@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/detail_mail_bka.dart';  
+import 'package:flutter_application_1/pages/detail_mail_bka.dart';
+import 'package:flutter_application_1/pages/profile_page_staff.dart';  
 import 'package:google_fonts/google_fonts.dart';  
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';  
 import 'detail_mail.dart';  
@@ -17,8 +18,8 @@ class _BkaDashboardState extends State<BkaDashboard> {
   int _selectedIndex = 0;  
   String _searchQuery = '';  
   String _selectedCategory = 'All';  
-  List<SuratModel> _suratList = []; // List to hold surat data  
-  bool _isLoading = true; // Loading state  
+  List<SuratModel> _suratList = []; 
+  bool _isLoading = true; 
   
   final String token = '6717db9aec5074ec8261d698';  
   final String project = 'uas-sis';  
@@ -58,11 +59,12 @@ class _BkaDashboardState extends State<BkaDashboard> {
   
     // Navigate to ProfilePage when the second item is tapped  
     if (index == 1) {  
-      Navigator.push(  
-        context,  
-        MaterialPageRoute(  
-            builder: (context) => ProfilePage(isStudent: true)), // Pass any required parameters  
-      );  
+      Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ProfilePageStaff(role: 'bka'),
+  ),
+);  
     }  
   }  
   
@@ -103,6 +105,7 @@ class _BkaDashboardState extends State<BkaDashboard> {
         child: ClipRRect(  
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),  
           child: AppBar(  
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.orange,  
             title: Text(  
               'BKA Dashboard',  
@@ -118,11 +121,7 @@ class _BkaDashboardState extends State<BkaDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,  
           children: [  
             Row(  
-              children: [  
-                CircleAvatar(  
-                  radius: 30,  
-                  backgroundImage: AssetImage('assets/fti_profile.jpg'),  
-                ),  
+              children: [    
                 SizedBox(width: 10),  
                 Expanded(  
                   child: Row(  
@@ -266,7 +265,7 @@ class _BkaDashboardState extends State<BkaDashboard> {
               label: 'Home',  
             ),  
             BottomNavigationBarItem(  
-              icon: Icon(Icons.person, color: Colors.orange),  
+              icon: Icon(Icons.person, color: Colors.grey),  
               label: 'Profile',  
             ),  
           ],  

@@ -24,7 +24,7 @@ class _NewRequestState extends State<NewRequest> {
   String? _selectedPenerima;    
     
   final List<String> _categories = ['Peminjaman', 'Permohonan'];    
-  final List<String> _penerima = ['Head of Study Program', 'Faculty'];    
+  final List<String> _penerima = ['Head of Study Program', 'Faculty', 'BKU', 'BKA'];    
     
   late String dateCreate;    
   final String appid = '677eb6dae9cc622b8bd171ea'; // Define your app ID here    
@@ -65,7 +65,7 @@ class _NewRequestState extends State<NewRequest> {
             DateTime.now()    
                 .millisecondsSinceEpoch    
                 .toString(), // Generate a unique code    
-        feedback_proposal: '', // Initial feedback    
+        feedback_proposal: '', timestamp: '', // Initial feedback    
       );    
     
       // Call the API to create the proposal    

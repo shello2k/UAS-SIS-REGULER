@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
-import 'package:flutter_application_1/models/restapi.dart'; 
-import 'package:flutter_application_1/models/model_surat.dart'; 
-import 'dart:convert'; 
+import 'package:flutter_application_1/models/restapi.dart';
+import 'package:flutter_application_1/models/model_surat.dart';
+import 'dart:convert';
 
 class DetailMailBku extends StatefulWidget {
   final String kode_proposal; // Surat ID passed from the previous screen
@@ -18,6 +18,7 @@ class DetailMailBku extends StatefulWidget {
 class _DetailMailState extends State<DetailMailBku> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
+  bool _isBku = false;
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _DetailMailState extends State<DetailMailBku> {
         setState(() {
           surat = SuratModel.fromJson(data);
           _isLoading = false;
+          _isBku = surat.penerima == 'BKU';
         });
       } else {
         // Handle the case where no data is returned
@@ -115,7 +117,6 @@ class _DetailMailState extends State<DetailMailBku> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,24 +147,38 @@ class _DetailMailState extends State<DetailMailBku> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
-                  Text(
-                    surat.judul_proposal,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Center(
+                    child: Text(
+                      surat.judul_proposal,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+                  Center(
+                    child: Text(
+                      surat.kode_proposal,
+                      textAlign: TextAlign.center, // tetap center
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ),
+                  SizedBox(height: 13),
                   Text(
-                    'Category: ${surat.kategory_proposal}',
+                    'Category: ' + surat.kategory_proposal,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 5),
                   Text(
-                    'Request Date: ${surat.tanggal_pengajuan}',
+                    'Request Date: ' + surat.tanggal_pengajuan,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
@@ -230,7 +245,8 @@ class _DetailMailState extends State<DetailMailBku> {
                                         await _updateFeedback(feedback);
 
                                         // Setelah feedback berhasil diupdate, update status surat
-                                        await _updateSuratStatus("Rejected - bku");
+                                        await _updateSuratStatus(
+                                            "Rejected - bku");
 
                                         // Tampilkan notifikasi sukses
                                         await ArtSweetAlert.show(
@@ -293,6 +309,9 @@ class _DetailMailState extends State<DetailMailBku> {
                           }
 
                           if (response.isTapConfirmButton) {
+                            String newStatus = _isBku
+                            ? "Approved"
+                            : "On Progress - BKA";
                             await _updateSuratStatus(
                                 "On Progress - BKA"); // Update status to "On Progress - Faculty"
                             ArtSweetAlert.show(

@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
-import 'package:flutter_application_1/models/model_surat.dart'; // Import your SuratModel
-import 'package:flutter_application_1/models/restapi.dart'; // Import your DataService
-import 'dart:convert'; // For jsonDecode
-import 'package:flutter_application_1/pages/profile_page_staff.dart'; // Import your ProfilePageStaff
+import 'package:flutter_application_1/models/model_surat.dart';
+import 'package:flutter_application_1/models/restapi.dart';
+import 'dart:convert'; 
+import 'package:flutter_application_1/pages/profile_page_staff.dart'; 
 
 class HeadDashboard extends StatefulWidget {
   @override
@@ -18,6 +19,8 @@ class _HeadDashboardState extends State<HeadDashboard> {
   String _selectedCategory = 'All';
   List<SuratModel> _suratList = []; // List to hold surat data
   bool _isLoading = true; // Loading state
+  String? _userName; // To store user name
+
 
   final String token = '6717db9aec5074ec8261d698';
   final String project = 'uas-sis';
@@ -25,10 +28,37 @@ class _HeadDashboardState extends State<HeadDashboard> {
   final String appid = '677eb6dae9cc622b8bd171ea';
 
   @override
-  void initState() {
-    super.initState();
-    _fetchSurat(); // Fetch surat data when the dashboard is initialized
+void initState() {
+  super.initState();
+  _fetchSurat();
+  _fetchUserName(); 
+}
+
+
+  Future<void> _fetchUserName() async {
+  setState(() {
+    _isLoading = true; // Start loading user
+  });
+
+  try {
+    // Ambil data dari Firestore
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users') // Ganti dengan nama koleksi di Firestore
+        .doc('USER_DOCUMENT_ID') // Ganti dengan ID dokumen pengguna
+        .get();
+
+    setState(() {
+      _userName = snapshot.data()?['name'] ?? 'Unknown User'; // Ambil nama
+      _isLoading = false; // Stop loading user
+    });
+  } catch (e) {
+    print('Error fetching user name: $e');
+    setState(() {
+      _isLoading = false; // Stop loading user
+    });
   }
+}
+
 
   Future<void> _fetchSurat() async {
     setState(() {
@@ -98,6 +128,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
         child: ClipRRect(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
           child: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.orange,
             title: Text(
               'Head Dashboard',
@@ -115,18 +146,14 @@ class _HeadDashboardState extends State<HeadDashboard> {
             // User Profile Section
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage:
-                      AssetImage('assets/head_profile.png'), // Static image
-                ),
+                
                 SizedBox(width: 10),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Mira Musrini Barmawi', // Static name
+                        'HI, Kepala Program Studi',
                         style: GoogleFonts.poppins(
                             fontSize: 16, color: Colors.black),
                       ),
@@ -281,7 +308,7 @@ class _HeadDashboardState extends State<HeadDashboard> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: FaIcon(Icons.person, color: Colors.orange),
+              icon: FaIcon(Icons.person, color: Colors.grey),
               label: 'Profile',
             ),
           ],

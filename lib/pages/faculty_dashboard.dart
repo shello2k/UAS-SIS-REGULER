@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/detail_mail_faculty.dart';
+import 'package:flutter_application_1/pages/profile_page_staff.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'detail_mail.dart';
@@ -64,8 +65,8 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                ProfilePage(isStudent: true)), // Pass any required parameters
+          builder: (context) => ProfilePageStaff(role: 'Faculty'),
+        ),
       );
     }
   }
@@ -93,11 +94,11 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
           surat.kategory_proposal == _selectedCategory;
       final isNotRejectedOrApproved = surat.status_surat != 'Rejected' &&
           surat.status_surat != 'On Progress - BKU';
-      final isProggres = surat.status_surat ==
-          'On Progress - Faculty'; // Exclude rejected and approved surat
+      final isProggres = surat.status_surat == 'On Progress - Fakultas';
       return matchesSearch &&
           matchesCategory &&
-          isNotRejectedOrApproved && isProggres; // Add the new condition
+          isNotRejectedOrApproved &&
+          isProggres; // Add the new condition
     }).toList();
   }
 
@@ -115,6 +116,7 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
         child: ClipRRect(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
           child: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.orange,
             title: Text(
               'Faculty Dashboard',
@@ -131,10 +133,6 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/fti_profile.jpg'),
-                ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Row(
@@ -233,8 +231,8 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
                               itemBuilder: (context, index) {
                                 final surat = _getFilteredSurat()[index];
                                 return GestureDetector(
-                                  onTap: () => _navigateToDetailMail(context,
-                                      surat.id), // Pass surat ID to DetailMail
+                                  onTap: () =>
+                                      _navigateToDetailMail(context, surat.id),
                                   child: Card(
                                     elevation: 4,
                                     margin: EdgeInsets.symmetric(
@@ -295,7 +293,7 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: FaIcon(Icons.person, color: Colors.orange),
+              icon: FaIcon(Icons.person, color: Colors.grey),
               label: 'Profile',
             ),
           ],

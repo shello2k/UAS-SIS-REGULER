@@ -18,6 +18,7 @@ class DetailMailBka extends StatefulWidget {
 class _DetailMailState extends State<DetailMailBka> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
+  bool _isBka = false; 
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _DetailMailState extends State<DetailMailBka> {
         setState(() {
           surat = SuratModel.fromJson(data);
           _isLoading = false;
+          _isBka = surat.penerima.toLowerCase() == 'BKA';
         });
       } else {
         // Handle the case where no data is returned
@@ -146,24 +148,38 @@ class _DetailMailState extends State<DetailMailBka> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
-                  Text(
-                    surat.judul_proposal,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Center(
+                    child: Text(
+                      surat.judul_proposal,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+                  Center(
+                    child: Text(
+                      surat.kode_proposal,
+                      textAlign: TextAlign.center, // tetap center
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ),
+                  SizedBox(height: 13),
                   Text(
-                    'Category: ${surat.kategory_proposal}',
+                    'Category: ' + surat.kategory_proposal,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 5),
                   Text(
-                    'Request Date: ${surat.tanggal_pengajuan}',
+                    'Request Date: ' + surat.tanggal_pengajuan,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),

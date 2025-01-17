@@ -18,6 +18,7 @@ class DetailMailFaculty extends StatefulWidget {
 class _DetailMailState extends State<DetailMailFaculty> {
   late SuratModel surat; // To hold the surat details
   bool _isLoading = true; // Loading state
+  bool _isFakultas = false; // Check if the user is a faculty
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _DetailMailState extends State<DetailMailFaculty> {
         final data = response; // Use the response directly
         setState(() {
           surat = SuratModel.fromJson(data);
+          _isFakultas = surat.penerima == 'Faculty';
           _isLoading = false;
         });
       } else {
@@ -210,24 +212,38 @@ class _DetailMailState extends State<DetailMailFaculty> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
-                  Text(
-                    surat.judul_proposal,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Center(
+                    child: Text(
+                      surat.judul_proposal,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
+                  Center(
+                    child: Text(
+                      surat.kode_proposal,
+                      textAlign: TextAlign.center, // tetap center
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ),
+                  SizedBox(height: 13),
                   Text(
-                    'Category: ${surat.kategory_proposal}',
+                    'Category: ' + surat.kategory_proposal,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 5),
                   Text(
-                    'Request Date: ${surat.tanggal_pengajuan}',
+                    'Request Date: ' + surat.tanggal_pengajuan,
                     style: GoogleFonts.poppins(
                         fontSize: 16, color: Colors.grey[600]),
                   ),
@@ -294,7 +310,7 @@ class _DetailMailState extends State<DetailMailFaculty> {
                                         await _updateFeedback(feedback);
 
                                         // Setelah feedback berhasil diupdate, update status surat
-                                        await _updateSuratStatus("Rejected");
+                                        await _updateSuratStatus("Rejected - Fakultas");
 
                                         // Tampilkan notifikasi sukses
                                         await ArtSweetAlert.show(
@@ -357,8 +373,11 @@ class _DetailMailState extends State<DetailMailFaculty> {
                           }
 
                           if (response.isTapConfirmButton) {
+                            String newStatus = _isFakultas
+                                ? "Approved"
+                                : "On Progress - BKU";
                             await _updateSuratStatus(
-                                "On Progress - BKU"); // Update status to "On Progress - Faculty"
+                                newStatus); // Update status to "On Progress - Faculty"
                             ArtSweetAlert.show(
                               context: context,
                               artDialogArgs: ArtDialogArgs(

@@ -12,6 +12,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _email;
   String? _password;
+  bool obscureText = true; 
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -176,8 +177,18 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               filled: true,
                               fillColor: Colors.white,
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.visibility,
+                                    color: Colors.orange),
+                                onPressed: () {
+                                  setState(() {
+                                    obscureText = !obscureText;
+                                  });
+                                },
+                              ),
                             ),
-                            obscureText: true,
+                            obscureText:
+                                obscureText, // Menggunakan variabel baru untuk menyimpan status obsecure text
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Password cannot be empty';
@@ -188,13 +199,17 @@ class _LoginPageState extends State<LoginPage> {
                               _password = value;
                             },
                           ),
+
                           SizedBox(height: 8),
-                          // Forgot Password
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder:(context) => ForgotPasswordPage()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ForgotPasswordPage()));
                               },
                               child: Text(
                                 'Forgot Password?',

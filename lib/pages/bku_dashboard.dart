@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/detail_mail_bku.dart';  
+import 'package:flutter_application_1/pages/detail_mail_bku.dart';
+import 'package:flutter_application_1/pages/profile_page_staff.dart';  
 import 'package:google_fonts/google_fonts.dart';  
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';  
 import 'detail_mail.dart';  
@@ -61,8 +62,8 @@ class _BkuDashboardState extends State<BkuDashboard> {
       Navigator.push(  
         context,  
         MaterialPageRoute(  
-            builder: (context) => ProfilePage(isStudent: true)), // Pass any required parameters  
-      );  
+            builder: (context) => ProfilePageStaff(role: 'bku')), // Pass any required parameters  
+      );
     }  
   }  
   
@@ -103,6 +104,7 @@ class _BkuDashboardState extends State<BkuDashboard> {
         child: ClipRRect(  
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),  
           child: AppBar(  
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.orange,  
             title: Text(  
               'BKU Dashboard',  
@@ -118,11 +120,7 @@ class _BkuDashboardState extends State<BkuDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,  
           children: [  
             Row(  
-              children: [  
-                CircleAvatar(  
-                  radius: 30,  
-                  backgroundImage: AssetImage('assets/fti_profile.jpg'),  
-                ),  
+              children: [   
                 SizedBox(width: 10),  
                 Expanded(  
                   child: Row(  
@@ -266,7 +264,7 @@ class _BkuDashboardState extends State<BkuDashboard> {
               label: 'Home',  
             ),  
             BottomNavigationBarItem(  
-              icon: FaIcon(Icons.person, color: Colors.orange),  
+              icon: FaIcon(Icons.person, color: Colors.grey),  
               label: 'Profile',  
             ),  
           ],  

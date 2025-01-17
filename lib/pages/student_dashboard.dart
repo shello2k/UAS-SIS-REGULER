@@ -251,6 +251,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
       case 'Rejected':
         statusColor = Colors.red;
         break;
+      case 'Rejected - Faculty':
+        statusColor = Colors.red;
+        break;
+      case 'Rejected - bku':
+        statusColor = Colors.red;
+        break;
+      case 'Rejected - bka':
+        statusColor = Colors.red;
+        break;
       case 'Approved':
         statusColor = Colors.green;
         break;
@@ -339,7 +348,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 ),
               ],
             ),
-            if (proposal.status_surat == 'Rejected') ...[
+            if (proposal.status_surat == ('Rejected', 'Rejected - bku', 'Rejected - faculty', 'Rejected - bka')) ...[
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

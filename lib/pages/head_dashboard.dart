@@ -60,28 +60,49 @@ void initState() {
 }
 
 
-  Future<void> _fetchSurat() async {
-    setState(() {
-      _isLoading = true; // Set loading state
-    });
+  // Future<void> _fetchSurat() async {
+  //   setState(() {
+  //     _isLoading = true; // Set loading state
+  //   });
 
-    try {
-      final response =
-          await DataService().selectAll(token, project, collection, appid);
-      final List<dynamic> data = json.decode(response);
-      setState(() {
-        _suratList = data
-            .map((item) => SuratModel.fromJson(item))
-            .toList(); // Map the response to SuratModel
-        _isLoading = false; // Set loading state to false
-      });
-    } catch (e) {
-      print('Error fetching surat: $e');
-      setState(() {
-        _isLoading = false; // Set loading state to false
-      });
-    }
+  //   try {
+  //     final response =
+  //         await DataService().selectAll(token, project, collection, appid);
+  //     final List<dynamic> data = json.decode(response);
+  //     setState(() {
+  //       _suratList = data
+  //           .map((item) => SuratModel.fromJson(item))
+  //           .toList(); // Map the response to SuratModel
+  //       _isLoading = false; // Set loading state to false
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching surat: $e');
+  //     setState(() {
+  //       _isLoading = false; // Set loading state to false
+  //     });
+  //   }
+  // }
+
+  Future<void> _fetchSurat() async {
+  setState(() {
+    _isLoading = true; // Set loading state
+  });
+
+  try {
+    final response = await DataService().selectAll(token, project, collection, appid);
+    final List<dynamic> data = json.decode(response);
+    setState(() {
+      _suratList = data.map((item) => SuratModel.fromJson(item)).toList(); // Initialize surat
+      _isLoading = false; // Set loading state to false
+    });
+  } catch (e) {
+    print('Error fetching surat: $e');
+    setState(() {
+      _isLoading = false; // Set loading state to false
+    });
   }
+}
+
 
   void _navigateToDetailMail(BuildContext context, String kode_proposal) {
     Navigator.push(
@@ -96,6 +117,23 @@ void initState() {
       }
     });
   }
+
+//   _navigateToDetailMail(BuildContext context, String kode_proposal) {
+//   if (_suratList.isNotEmpty) {
+//     final SuratModel surat = _suratList.firstWhere((s) => s.id == kode_proposal);
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => DetailMail(kode_proposal:kode_proposal), // Pass the SuratModel
+//       ),
+//     ).then((isUpdated) {
+//       if (isUpdated == true) {
+//         _fetchSurat(); // Refresh list of proposals after successful edit
+//       }
+//     });
+//   }
+// }
+
 
   List<SuratModel> _getFilteredSurat() {
     return _suratList.where((surat) {
@@ -270,7 +308,7 @@ void initState() {
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            'Proposer: ${surat.penerima}', // Assuming 'penerima' holds the user ID
+                                            'Proposer: Himsi', // Assuming 'penerima' holds the user ID
                                             style: GoogleFonts.poppins(
                                                 color: Colors.grey[600],
                                                 fontSize: 12),

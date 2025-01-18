@@ -65,7 +65,7 @@ class _NewRequestState extends State<NewRequest> {
             DateTime.now()    
                 .millisecondsSinceEpoch    
                 .toString(), // Generate a unique code    
-        feedback_proposal: '', timestamp: '', // Initial feedback    
+        feedback_proposal: '', // Initial feedback    
       );    
     
       // Call the API to create the proposal    

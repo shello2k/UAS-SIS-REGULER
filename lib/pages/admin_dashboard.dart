@@ -93,13 +93,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             selectedColor: Colors.orange,
           ),
 
-          /// Category
-          CrystalNavigationBarItem(
-            icon: FontAwesomeIcons.layerGroup,
-            unselectedIcon: FontAwesomeIcons.layerGroup,
-            selectedColor: Colors.orange,
-          ),
-
           /// Document
           CrystalNavigationBarItem(
             icon: FontAwesomeIcons.list,
@@ -119,8 +112,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       case 0:
         return _buildUserForm();
       case 1:
-        return _buildCategoryForm();
-      case 2:
         return _buildUserList();
       default:
         return Container();
@@ -301,58 +292,58 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildCategoryForm() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'List of mail categories',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _showAddCategoryDialog();
-                },
-                child: Text('ADD'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    _categories[index],
-                    style: GoogleFonts.poppins(),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(FontAwesomeIcons.trash),
-                    onPressed: () {
-                      _deleteCategory(index);
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildCategoryForm() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(16.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             Text(
+  //               'List of mail categories',
+  //               style: GoogleFonts.poppins(
+  //                 fontSize: 18,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             ElevatedButton(
+  //               onPressed: () {
+  //                 _showAddCategoryDialog();
+  //               },
+  //               child: Text('ADD'),
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: Colors.orange,
+  //                 foregroundColor: Colors.white,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16),
+  //         Expanded(
+  //           child: ListView.builder(
+  //             itemCount: _categories.length,
+  //             itemBuilder: (context, index) {
+  //               return ListTile(
+  //                 title: Text(
+  //                   _categories[index],
+  //                   style: GoogleFonts.poppins(),
+  //                 ),
+  //                 trailing: IconButton(
+  //                   icon: Icon(FontAwesomeIcons.trash),
+  //                   onPressed: () {
+  //                     _deleteCategory(index);
+  //                   },
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildUserList() {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;

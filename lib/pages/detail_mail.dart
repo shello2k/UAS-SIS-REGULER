@@ -17,6 +17,7 @@ class DetailMail extends StatefulWidget {
 
 class _DetailMailState extends State<DetailMail> {
   late SuratModel surat; // To hold the surat details
+  //SuratModel? surat; // Bisa null
   bool _isLoading = true; // Loading state
   bool _isHeadOfStudyProgram = false;
 
@@ -41,25 +42,58 @@ class _DetailMailState extends State<DetailMail> {
       ); // Fetch surat by ID
 
       if (response.isNotEmpty) {
-        final data = response;
         setState(() {
-          surat = SuratModel.fromJson(data);
+          surat = SuratModel.fromJson(response); // Initialize surat here
           _isHeadOfStudyProgram = surat.penerima == 'Head of Study Program';
           _isLoading = false;
         });
       } else {
-        // Handle the case where no data is returned
         setState(() {
-          _isLoading = false; // Set loading state to false
+          _isLoading =
+              false; // Set loading state to false if no data is returned
         });
       }
     } catch (e) {
       print('Error fetching surat details: $e');
       setState(() {
-        _isLoading = false; // Set loading state to false
+        _isLoading = false; // Set loading state to false in case of an error
       });
     }
   }
+
+  //   Future<void> _fetchSuratDetails() async {
+  //   setState(() {
+  //     _isLoading = true; // Set loading state
+  //   });
+
+  //   try {
+  //     final response = await DataService().selectId(
+  //       '6717db9aec5074ec8261d698', // Token
+  //       'uas-sis', // Project
+  //       'surat', // Collection
+  //       '677eb6dae9cc622b8bd171ea', // App ID
+  //       widget.kode_proposal, // Surat ID
+  //     ); // Fetch surat by ID
+
+  //     if (response.isNotEmpty) {
+  //       final data = response;
+  //       setState(() {
+  //         surat = SuratModel.fromJson(data); // Initialize surat here
+  //         _isHeadOfStudyProgram = surat.penerima == 'Head of Study Program';
+  //         _isLoading = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _isLoading = false; // Set loading state to false
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching surat details: $e');
+  //     setState(() {
+  //       _isLoading = false; // Set loading state to false
+  //     });
+  //   }
+  // }
 
   Future<void> _updateFeedback(String feedback) async {
     try {
@@ -124,7 +158,7 @@ class _DetailMailState extends State<DetailMail> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start, 
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Text(

@@ -255,7 +255,7 @@ class _FacultyDashboardState extends State<FacultyDashboard> {
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            'Proposer: ${surat.penerima}', // Assuming 'penerima' holds the user ID
+                                            'Proposer: Himsi', // Assuming 'penerima' holds the user ID
                                             style: GoogleFonts.poppins(
                                                 color: Colors.grey[600],
                                                 fontSize: 12),

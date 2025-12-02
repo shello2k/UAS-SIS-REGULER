@@ -17,7 +17,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'pages/admin_dashboard.dart';
 import 'pages/student_dashboard.dart';
-import 'pages/profile_page.dart';
+import 'pages/profile_page.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
